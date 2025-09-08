@@ -1,0 +1,839 @@
+[
+	{
+		"anonymous": false,
+		"inputs": [
+			{
+				"indexed": true,
+				"internalType": "uint256",
+				"name": "retiredProjectId",
+				"type": "uint256"
+			},
+			{
+				"indexed": false,
+				"internalType": "string",
+				"name": "certificateCID",
+				"type": "string"
+			}
+		],
+		"name": "CertificateAdded",
+		"type": "event"
+	},
+	{
+		"anonymous": false,
+		"inputs": [
+			{
+				"indexed": true,
+				"internalType": "uint256",
+				"name": "originalProjectId",
+				"type": "uint256"
+			},
+			{
+				"indexed": true,
+				"internalType": "uint256",
+				"name": "newOwnedProjectId",
+				"type": "uint256"
+			},
+			{
+				"indexed": false,
+				"internalType": "string",
+				"name": "externalId",
+				"type": "string"
+			},
+			{
+				"indexed": true,
+				"internalType": "address",
+				"name": "buyer",
+				"type": "address"
+			},
+			{
+				"indexed": false,
+				"internalType": "uint256",
+				"name": "quantity",
+				"type": "uint256"
+			},
+			{
+				"indexed": false,
+				"internalType": "uint256",
+				"name": "totalPrice",
+				"type": "uint256"
+			}
+		],
+		"name": "ProjectBought",
+		"type": "event"
+	},
+	{
+		"anonymous": false,
+		"inputs": [
+			{
+				"indexed": true,
+				"internalType": "uint256",
+				"name": "projectId",
+				"type": "uint256"
+			},
+			{
+				"indexed": false,
+				"internalType": "string",
+				"name": "externalId",
+				"type": "string"
+			},
+			{
+				"indexed": false,
+				"internalType": "string",
+				"name": "name",
+				"type": "string"
+			},
+			{
+				"indexed": false,
+				"internalType": "string",
+				"name": "documentCID",
+				"type": "string"
+			},
+			{
+				"indexed": false,
+				"internalType": "uint256",
+				"name": "value",
+				"type": "uint256"
+			},
+			{
+				"indexed": false,
+				"internalType": "uint256",
+				"name": "quantity",
+				"type": "uint256"
+			},
+			{
+				"indexed": false,
+				"internalType": "string",
+				"name": "ownerName",
+				"type": "string"
+			},
+			{
+				"indexed": true,
+				"internalType": "address",
+				"name": "owner",
+				"type": "address"
+			}
+		],
+		"name": "ProjectRegistered",
+		"type": "event"
+	},
+	{
+		"anonymous": false,
+		"inputs": [
+			{
+				"indexed": true,
+				"internalType": "uint256",
+				"name": "originalOwnedProjectId",
+				"type": "uint256"
+			},
+			{
+				"indexed": true,
+				"internalType": "uint256",
+				"name": "newForSaleProjectId",
+				"type": "uint256"
+			},
+			{
+				"indexed": false,
+				"internalType": "string",
+				"name": "externalId",
+				"type": "string"
+			},
+			{
+				"indexed": true,
+				"internalType": "address",
+				"name": "seller",
+				"type": "address"
+			},
+			{
+				"indexed": false,
+				"internalType": "uint256",
+				"name": "valuePerCarbon",
+				"type": "uint256"
+			},
+			{
+				"indexed": false,
+				"internalType": "uint256",
+				"name": "quantity",
+				"type": "uint256"
+			}
+		],
+		"name": "ProjectResold",
+		"type": "event"
+	},
+	{
+		"anonymous": false,
+		"inputs": [
+			{
+				"indexed": true,
+				"internalType": "uint256",
+				"name": "originalOwnedProjectId",
+				"type": "uint256"
+			},
+			{
+				"indexed": true,
+				"internalType": "uint256",
+				"name": "newRetiredProjectId",
+				"type": "uint256"
+			},
+			{
+				"indexed": true,
+				"internalType": "address",
+				"name": "owner",
+				"type": "address"
+			},
+			{
+				"indexed": false,
+				"internalType": "uint256",
+				"name": "quantity",
+				"type": "uint256"
+			}
+		],
+		"name": "ProjectRetired",
+		"type": "event"
+	},
+	{
+		"inputs": [
+			{
+				"internalType": "uint256",
+				"name": "_retiredProjectId",
+				"type": "uint256"
+			},
+			{
+				"internalType": "string",
+				"name": "_certificateCID",
+				"type": "string"
+			}
+		],
+		"name": "addRetirementCertificate",
+		"outputs": [],
+		"stateMutability": "nonpayable",
+		"type": "function"
+	},
+	{
+		"inputs": [
+			{
+				"internalType": "uint256",
+				"name": "_projectId",
+				"type": "uint256"
+			},
+			{
+				"internalType": "uint256",
+				"name": "_quantity",
+				"type": "uint256"
+			}
+		],
+		"name": "buyProject",
+		"outputs": [],
+		"stateMutability": "payable",
+		"type": "function"
+	},
+	{
+		"inputs": [
+			{
+				"internalType": "address",
+				"name": "_seller",
+				"type": "address"
+			}
+		],
+		"name": "getListedProjects",
+		"outputs": [
+			{
+				"components": [
+					{
+						"internalType": "uint256",
+						"name": "projectId",
+						"type": "uint256"
+					},
+					{
+						"internalType": "string",
+						"name": "externalId",
+						"type": "string"
+					},
+					{
+						"internalType": "string",
+						"name": "projectName",
+						"type": "string"
+					},
+					{
+						"internalType": "string",
+						"name": "documentCID",
+						"type": "string"
+					},
+					{
+						"internalType": "string",
+						"name": "certificateCID",
+						"type": "string"
+					},
+					{
+						"internalType": "uint256",
+						"name": "valuePerCarbon",
+						"type": "uint256"
+					},
+					{
+						"internalType": "uint256",
+						"name": "quantity",
+						"type": "uint256"
+					},
+					{
+						"internalType": "string",
+						"name": "ownerName",
+						"type": "string"
+					},
+					{
+						"internalType": "address",
+						"name": "ownerAddress",
+						"type": "address"
+					},
+					{
+						"internalType": "uint256",
+						"name": "createdAt",
+						"type": "uint256"
+					},
+					{
+						"internalType": "bool",
+						"name": "isResold",
+						"type": "bool"
+					},
+					{
+						"internalType": "enum CarbonMarketplace.ProjectStatus",
+						"name": "status",
+						"type": "uint8"
+					},
+					{
+						"internalType": "uint256",
+						"name": "marketplaceIndex",
+						"type": "uint256"
+					}
+				],
+				"internalType": "struct CarbonMarketplace.Project[]",
+				"name": "",
+				"type": "tuple[]"
+			}
+		],
+		"stateMutability": "view",
+		"type": "function"
+	},
+	{
+		"inputs": [],
+		"name": "getMarketplace",
+		"outputs": [
+			{
+				"components": [
+					{
+						"internalType": "uint256",
+						"name": "projectId",
+						"type": "uint256"
+					},
+					{
+						"internalType": "string",
+						"name": "externalId",
+						"type": "string"
+					},
+					{
+						"internalType": "string",
+						"name": "projectName",
+						"type": "string"
+					},
+					{
+						"internalType": "string",
+						"name": "documentCID",
+						"type": "string"
+					},
+					{
+						"internalType": "string",
+						"name": "certificateCID",
+						"type": "string"
+					},
+					{
+						"internalType": "uint256",
+						"name": "valuePerCarbon",
+						"type": "uint256"
+					},
+					{
+						"internalType": "uint256",
+						"name": "quantity",
+						"type": "uint256"
+					},
+					{
+						"internalType": "string",
+						"name": "ownerName",
+						"type": "string"
+					},
+					{
+						"internalType": "address",
+						"name": "ownerAddress",
+						"type": "address"
+					},
+					{
+						"internalType": "uint256",
+						"name": "createdAt",
+						"type": "uint256"
+					},
+					{
+						"internalType": "bool",
+						"name": "isResold",
+						"type": "bool"
+					},
+					{
+						"internalType": "enum CarbonMarketplace.ProjectStatus",
+						"name": "status",
+						"type": "uint8"
+					},
+					{
+						"internalType": "uint256",
+						"name": "marketplaceIndex",
+						"type": "uint256"
+					}
+				],
+				"internalType": "struct CarbonMarketplace.Project[]",
+				"name": "",
+				"type": "tuple[]"
+			}
+		],
+		"stateMutability": "view",
+		"type": "function"
+	},
+	{
+		"inputs": [
+			{
+				"internalType": "address",
+				"name": "_owner",
+				"type": "address"
+			}
+		],
+		"name": "getOwnedProjects",
+		"outputs": [
+			{
+				"components": [
+					{
+						"internalType": "uint256",
+						"name": "projectId",
+						"type": "uint256"
+					},
+					{
+						"internalType": "string",
+						"name": "externalId",
+						"type": "string"
+					},
+					{
+						"internalType": "string",
+						"name": "projectName",
+						"type": "string"
+					},
+					{
+						"internalType": "string",
+						"name": "documentCID",
+						"type": "string"
+					},
+					{
+						"internalType": "string",
+						"name": "certificateCID",
+						"type": "string"
+					},
+					{
+						"internalType": "uint256",
+						"name": "valuePerCarbon",
+						"type": "uint256"
+					},
+					{
+						"internalType": "uint256",
+						"name": "quantity",
+						"type": "uint256"
+					},
+					{
+						"internalType": "string",
+						"name": "ownerName",
+						"type": "string"
+					},
+					{
+						"internalType": "address",
+						"name": "ownerAddress",
+						"type": "address"
+					},
+					{
+						"internalType": "uint256",
+						"name": "createdAt",
+						"type": "uint256"
+					},
+					{
+						"internalType": "bool",
+						"name": "isResold",
+						"type": "bool"
+					},
+					{
+						"internalType": "enum CarbonMarketplace.ProjectStatus",
+						"name": "status",
+						"type": "uint8"
+					},
+					{
+						"internalType": "uint256",
+						"name": "marketplaceIndex",
+						"type": "uint256"
+					}
+				],
+				"internalType": "struct CarbonMarketplace.Project[]",
+				"name": "",
+				"type": "tuple[]"
+			}
+		],
+		"stateMutability": "view",
+		"type": "function"
+	},
+	{
+		"inputs": [
+			{
+				"internalType": "address",
+				"name": "_owner",
+				"type": "address"
+			}
+		],
+		"name": "getRetiredProjects",
+		"outputs": [
+			{
+				"components": [
+					{
+						"internalType": "uint256",
+						"name": "projectId",
+						"type": "uint256"
+					},
+					{
+						"internalType": "string",
+						"name": "externalId",
+						"type": "string"
+					},
+					{
+						"internalType": "string",
+						"name": "projectName",
+						"type": "string"
+					},
+					{
+						"internalType": "string",
+						"name": "documentCID",
+						"type": "string"
+					},
+					{
+						"internalType": "string",
+						"name": "certificateCID",
+						"type": "string"
+					},
+					{
+						"internalType": "uint256",
+						"name": "valuePerCarbon",
+						"type": "uint256"
+					},
+					{
+						"internalType": "uint256",
+						"name": "quantity",
+						"type": "uint256"
+					},
+					{
+						"internalType": "string",
+						"name": "ownerName",
+						"type": "string"
+					},
+					{
+						"internalType": "address",
+						"name": "ownerAddress",
+						"type": "address"
+					},
+					{
+						"internalType": "uint256",
+						"name": "createdAt",
+						"type": "uint256"
+					},
+					{
+						"internalType": "bool",
+						"name": "isResold",
+						"type": "bool"
+					},
+					{
+						"internalType": "enum CarbonMarketplace.ProjectStatus",
+						"name": "status",
+						"type": "uint8"
+					},
+					{
+						"internalType": "uint256",
+						"name": "marketplaceIndex",
+						"type": "uint256"
+					}
+				],
+				"internalType": "struct CarbonMarketplace.Project[]",
+				"name": "",
+				"type": "tuple[]"
+			}
+		],
+		"stateMutability": "view",
+		"type": "function"
+	},
+	{
+		"inputs": [
+			{
+				"internalType": "address",
+				"name": "",
+				"type": "address"
+			},
+			{
+				"internalType": "uint256",
+				"name": "",
+				"type": "uint256"
+			}
+		],
+		"name": "listedProjects",
+		"outputs": [
+			{
+				"internalType": "uint256",
+				"name": "",
+				"type": "uint256"
+			}
+		],
+		"stateMutability": "view",
+		"type": "function"
+	},
+	{
+		"inputs": [
+			{
+				"internalType": "uint256",
+				"name": "",
+				"type": "uint256"
+			}
+		],
+		"name": "marketplace",
+		"outputs": [
+			{
+				"internalType": "uint256",
+				"name": "",
+				"type": "uint256"
+			}
+		],
+		"stateMutability": "view",
+		"type": "function"
+	},
+	{
+		"inputs": [],
+		"name": "nextProjectId",
+		"outputs": [
+			{
+				"internalType": "uint256",
+				"name": "",
+				"type": "uint256"
+			}
+		],
+		"stateMutability": "view",
+		"type": "function"
+	},
+	{
+		"inputs": [
+			{
+				"internalType": "address",
+				"name": "",
+				"type": "address"
+			},
+			{
+				"internalType": "uint256",
+				"name": "",
+				"type": "uint256"
+			}
+		],
+		"name": "ownedProjects",
+		"outputs": [
+			{
+				"internalType": "uint256",
+				"name": "",
+				"type": "uint256"
+			}
+		],
+		"stateMutability": "view",
+		"type": "function"
+	},
+	{
+		"inputs": [
+			{
+				"internalType": "uint256",
+				"name": "",
+				"type": "uint256"
+			}
+		],
+		"name": "projects",
+		"outputs": [
+			{
+				"internalType": "uint256",
+				"name": "projectId",
+				"type": "uint256"
+			},
+			{
+				"internalType": "string",
+				"name": "externalId",
+				"type": "string"
+			},
+			{
+				"internalType": "string",
+				"name": "projectName",
+				"type": "string"
+			},
+			{
+				"internalType": "string",
+				"name": "documentCID",
+				"type": "string"
+			},
+			{
+				"internalType": "string",
+				"name": "certificateCID",
+				"type": "string"
+			},
+			{
+				"internalType": "uint256",
+				"name": "valuePerCarbon",
+				"type": "uint256"
+			},
+			{
+				"internalType": "uint256",
+				"name": "quantity",
+				"type": "uint256"
+			},
+			{
+				"internalType": "string",
+				"name": "ownerName",
+				"type": "string"
+			},
+			{
+				"internalType": "address",
+				"name": "ownerAddress",
+				"type": "address"
+			},
+			{
+				"internalType": "uint256",
+				"name": "createdAt",
+				"type": "uint256"
+			},
+			{
+				"internalType": "bool",
+				"name": "isResold",
+				"type": "bool"
+			},
+			{
+				"internalType": "enum CarbonMarketplace.ProjectStatus",
+				"name": "status",
+				"type": "uint8"
+			},
+			{
+				"internalType": "uint256",
+				"name": "marketplaceIndex",
+				"type": "uint256"
+			}
+		],
+		"stateMutability": "view",
+		"type": "function"
+	},
+	{
+		"inputs": [
+			{
+				"internalType": "string",
+				"name": "_externalId",
+				"type": "string"
+			},
+			{
+				"internalType": "string",
+				"name": "_projectName",
+				"type": "string"
+			},
+			{
+				"internalType": "string",
+				"name": "_documentCID",
+				"type": "string"
+			},
+			{
+				"internalType": "uint256",
+				"name": "_valuePerCarbon",
+				"type": "uint256"
+			},
+			{
+				"internalType": "uint256",
+				"name": "_quantity",
+				"type": "uint256"
+			},
+			{
+				"internalType": "string",
+				"name": "_ownerName",
+				"type": "string"
+			}
+		],
+		"name": "registerProject",
+		"outputs": [],
+		"stateMutability": "nonpayable",
+		"type": "function"
+	},
+	{
+		"inputs": [
+			{
+				"internalType": "uint256",
+				"name": "_ownedProjectId",
+				"type": "uint256"
+			},
+			{
+				"internalType": "uint256",
+				"name": "_quantity",
+				"type": "uint256"
+			},
+			{
+				"internalType": "uint256",
+				"name": "_newValuePerCarbon",
+				"type": "uint256"
+			},
+			{
+				"internalType": "string",
+				"name": "_newExternalId",
+				"type": "string"
+			},
+			{
+				"internalType": "string",
+				"name": "_ownerName",
+				"type": "string"
+			}
+		],
+		"name": "resellProject",
+		"outputs": [],
+		"stateMutability": "nonpayable",
+		"type": "function"
+	},
+	{
+		"inputs": [
+			{
+				"internalType": "uint256",
+				"name": "_ownedProjectId",
+				"type": "uint256"
+			},
+			{
+				"internalType": "uint256",
+				"name": "_quantity",
+				"type": "uint256"
+			}
+		],
+		"name": "retireProject",
+		"outputs": [],
+		"stateMutability": "nonpayable",
+		"type": "function"
+	},
+	{
+		"inputs": [
+			{
+				"internalType": "address",
+				"name": "",
+				"type": "address"
+			},
+			{
+				"internalType": "uint256",
+				"name": "",
+				"type": "uint256"
+			}
+		],
+		"name": "retiredProjects",
+		"outputs": [
+			{
+				"internalType": "uint256",
+				"name": "",
+				"type": "uint256"
+			}
+		],
+		"stateMutability": "view",
+		"type": "function"
+	}
+]
