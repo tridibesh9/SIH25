@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { Eye, CheckCircle, XCircle, Clock, MapPin, FileText, Calendar } from 'lucide-react';
+import ReviewWindow from '../components/ReviewWindow';
 
 export const AdminDashboard = () => {
   const [selectedProject, setSelectedProject] = useState(null);
@@ -45,6 +46,171 @@ export const AdminDashboard = () => {
       image: 'https://images.pexels.com/photos/1179229/pexels-photo-1179229.jpeg?auto=compress&cs=tinysrgb&w=400'
     }
   ];
+
+  // Demo data for review windows
+  const documentsToReview = [
+    {
+      id: 'DOC-001',
+      name: 'Environmental Impact Assessment - Forest Project',
+      type: 'Environmental Report',
+      submittedDate: '2024-01-15',
+      image: 'https://images.pexels.com/photos/416978/pexels-photo-416978.jpeg?auto=compress&cs=tinysrgb&w=400'
+    },
+    {
+      id: 'DOC-002',
+      name: 'Carbon Measurement Report - Solar Farm',
+      type: 'Technical Document',
+      submittedDate: '2024-01-18',
+      image: 'https://images.pexels.com/photos/416978/pexels-photo-416978.jpeg?auto=compress&cs=tinysrgb&w=400'
+    },
+    {
+      id: 'DOC-003',
+      name: 'Community Impact Study - Mangrove',
+      type: 'Social Impact Report',
+      submittedDate: '2024-01-20',
+      image: 'https://images.pexels.com/photos/416978/pexels-photo-416978.jpeg?auto=compress&cs=tinysrgb&w=400'
+    },
+    {
+      id: 'DOC-004',
+      name: 'Biodiversity Assessment - Wildlife Corridor',
+      type: 'Environmental Report',
+      submittedDate: '2024-01-22',
+      image: 'https://images.pexels.com/photos/416978/pexels-photo-416978.jpeg?auto=compress&cs=tinysrgb&w=400'
+    }
+  ];
+
+  const certificationsToReview = [
+    {
+      id: 'CERT-001',
+      name: 'ISO 14064 Verification - Wind Farm',
+      type: 'ISO Certification',
+      submittedDate: '2024-01-16',
+      image: 'https://images.pexels.com/photos/1181467/pexels-photo-1181467.jpeg?auto=compress&cs=tinysrgb&w=400'
+    },
+    {
+      id: 'CERT-002',
+      name: 'VCS Standard Validation - Biomass Project',
+      type: 'VCS Certification',
+      submittedDate: '2024-01-19',
+      image: 'https://images.pexels.com/photos/1181467/pexels-photo-1181467.jpeg?auto=compress&cs=tinysrgb&w=400'
+    },
+    {
+      id: 'CERT-003',
+      name: 'Gold Standard Certification - Hydro Power',
+      type: 'Gold Standard',
+      submittedDate: '2024-01-21',
+      image: 'https://images.pexels.com/photos/1181467/pexels-photo-1181467.jpeg?auto=compress&cs=tinysrgb&w=400'
+    },
+    {
+      id: 'CERT-004',
+      name: 'CDM Registration - Waste Management',
+      type: 'CDM Certification',
+      submittedDate: '2024-01-23',
+      image: 'https://images.pexels.com/photos/1181467/pexels-photo-1181467.jpeg?auto=compress&cs=tinysrgb&w=400'
+    }
+  ];
+
+  const creditRequests = [
+    {
+      id: 'REQ-001',
+      name: 'Request for 5,000 Carbon Credits - Tech Corp',
+      company: 'Tech Corp Solutions',
+      submittedDate: '2024-01-14',
+      image: 'https://images.pexels.com/photos/3184338/pexels-photo-3184338.jpeg?auto=compress&cs=tinysrgb&w=400'
+    },
+    {
+      id: 'REQ-002',
+      name: 'Bulk Credit Purchase - Manufacturing Inc',
+      company: 'Manufacturing Inc',
+      submittedDate: '2024-01-17',
+      image: 'https://images.pexels.com/photos/3184338/pexels-photo-3184338.jpeg?auto=compress&cs=tinysrgb&w=400'
+    },
+    {
+      id: 'REQ-003',
+      name: 'Corporate Offset Request - Airlines Group',
+      company: 'Airlines Group',
+      submittedDate: '2024-01-19',
+      image: 'https://images.pexels.com/photos/3184338/pexels-photo-3184338.jpeg?auto=compress&cs=tinysrgb&w=400'
+    },
+    {
+      id: 'REQ-004',
+      name: 'ESG Compliance Credits - Financial Services',
+      company: 'Financial Services Ltd',
+      submittedDate: '2024-01-21',
+      image: 'https://images.pexels.com/photos/3184338/pexels-photo-3184338.jpeg?auto=compress&cs=tinysrgb&w=400'
+    }
+  ];
+
+  const verificationRequests = [
+    {
+      id: 'VER-001',
+      name: 'Third-Party Verification - Solar Installation',
+      verifier: 'Global Verification Services',
+      submittedDate: '2024-01-13',
+      image: 'https://images.pexels.com/photos/1181467/pexels-photo-1181467.jpeg?auto=compress&cs=tinysrgb&w=400'
+    },
+    {
+      id: 'VER-002',
+      name: 'Annual Monitoring Report - Forest Conservation',
+      verifier: 'Environmental Audit Co.',
+      submittedDate: '2024-01-16',
+      image: 'https://images.pexels.com/photos/1181467/pexels-photo-1181467.jpeg?auto=compress&cs=tinysrgb&w=400'
+    },
+    {
+      id: 'VER-003',
+      name: 'Impact Assessment Verification - Wind Project',
+      verifier: 'Clean Energy Auditors',
+      submittedDate: '2024-01-18',
+      image: 'https://images.pexels.com/photos/1181467/pexels-photo-1181467.jpeg?auto=compress&cs=tinysrgb&w=400'
+    },
+    {
+      id: 'VER-004',
+      name: 'Compliance Verification - Biogas Plant',
+      verifier: 'Sustainability Verifiers Inc.',
+      submittedDate: '2024-01-20',
+      image: 'https://images.pexels.com/photos/1181467/pexels-photo-1181467.jpeg?auto=compress&cs=tinysrgb&w=400'
+    }
+  ];
+
+  const handleReviewDocument = (document) => {
+    console.log('Reviewing document:', document);
+    // This will be implemented later when backend integration is done
+  };
+
+  const handleReviewCertification = (certification) => {
+    console.log('Reviewing certification:', certification);
+    // This will be implemented later when backend integration is done
+  };
+
+  const handleReviewCreditRequest = (request) => {
+    console.log('Reviewing credit request:', request);
+    // This will be implemented later when backend integration is done
+  };
+
+  const handleReviewVerification = (verification) => {
+    console.log('Reviewing verification:', verification);
+    // This will be implemented later when backend integration is done
+  };
+
+  const handleBulkVerifyDocuments = () => {
+    console.log('Bulk verifying all documents');
+    alert('All documents have been verified!');
+  };
+
+  const handleBulkApproveCertifications = () => {
+    console.log('Bulk approving all certifications');
+    alert('All certifications have been approved!');
+  };
+
+  const handleBulkProcessRequests = () => {
+    console.log('Bulk processing all credit requests');
+    alert('All credit requests have been processed!');
+  };
+
+  const handleBulkVerifyRequests = () => {
+    console.log('Bulk verifying all verification requests');
+    alert('All verification requests have been verified!');
+  };
 
   const ReviewModal = ({ project, onClose, onApprove, onReject }) => (
     <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
@@ -209,6 +375,41 @@ export const AdminDashboard = () => {
             </div>
             <h3 className="text-2xl font-bold text-gray-800 mb-1">55</h3>
             <p className="text-gray-600">Total Projects</p>
+          </div>
+        </div>
+
+        {/* Review Windows Section */}
+        <div className="mb-8">
+          <h2 className="text-2xl font-semibold text-gray-800 mb-6">Review Dashboard</h2>
+          <div className="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-4 gap-6">
+            <ReviewWindow
+              title="Documents"
+              data={documentsToReview}
+              onReview={handleReviewDocument}
+              onBulkAction={handleBulkVerifyDocuments}
+              bulkActionText="Verify All"
+            />
+            <ReviewWindow
+              title="Satellite Image"
+              data={certificationsToReview}
+              onReview={handleReviewCertification}
+              onBulkAction={handleBulkApproveCertifications}
+              bulkActionText="Approve All"
+            />
+            <ReviewWindow
+              title="Drone Verification"
+              data={creditRequests}
+              onReview={handleReviewCreditRequest}
+              onBulkAction={handleBulkProcessRequests}
+              bulkActionText="Process All"
+            />
+            <ReviewWindow
+              title="NGO Reports"
+              data={verificationRequests}
+              onReview={handleReviewVerification}
+              onBulkAction={handleBulkVerifyRequests}
+              bulkActionText="Verify All"
+            />
           </div>
         </div>
 
