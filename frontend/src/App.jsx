@@ -8,7 +8,7 @@ import { Dashboard } from './pages/Dashboard.jsx';
 import { Auth } from './pages/Auth.jsx';
 import { AdminDashboard } from './pages/AdminDashboard.jsx';
 import { Certificate } from './pages/Certificate.jsx';
-
+// import { AdminDashboard } from './pages/AdminDashboard.jsx';
 function App() {
   return (
     <Router>
@@ -22,6 +22,7 @@ function App() {
           <Route path="/auth" element={<Auth />} />
           <Route path="/admin" element={<AdminDashboard />} />
           <Route path="/certificate/:id" element={<Certificate />} />
+          <Route path='/admin/dashboard' element={<AdminDashboard />} />
         </Routes>
       </div>
     </Router>
