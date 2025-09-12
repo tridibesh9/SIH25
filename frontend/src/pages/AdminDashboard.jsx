@@ -1,9 +1,101 @@
 import React, { useState } from 'react';
-import { Eye, CheckCircle, XCircle, Clock, MapPin, FileText, Calendar } from 'lucide-react';
+import { Eye, CheckCircle, XCircle, Clock, MapPin, FileText, Calendar, TrendingUp, AlertTriangle, BarChart3 } from 'lucide-react';
 import ReviewWindow from '../components/ReviewWindow';
+import ScoreBadge from '../components/ScoreBadge';
 
 export const AdminDashboard = () => {
   const [selectedProject, setSelectedProject] = useState(null);
+  const [selectedMonitoringProject, setSelectedMonitoringProject] = useState('reforestation-costa-rica');
+
+  // Demo data for monitoring dashboard
+  const monitoringProjects = [
+    {
+      id: 'reforestation-costa-rica',
+      name: 'Costa Rica Reforestation',
+      location: 'San José, Costa Rica',
+      type: 'Reforestation',
+      status: 'Active',
+      totalCredits: 48500,
+      currentYear: 15200,
+      fluctuation: '+12.5%',
+      risk: 'Low',
+      lastUpdate: '2025-09-10',
+      image: 'https://images.pexels.com/photos/1632790/pexels-photo-1632790.jpeg?auto=compress&cs=tinysrgb&w=400',
+      yearlyData: [
+        { year: '2020', credits: 8500 },
+        { year: '2021', credits: 12200 },
+        { year: '2022', credits: 15800 },
+        { year: '2023', credits: 18900 },
+        { year: '2024', credits: 22100 },
+        { year: '2025', credits: 15200 }
+      ]
+    },
+    {
+      id: 'solar-philippines',
+      name: 'Solar Energy Farm Philippines',
+      location: 'Luzon, Philippines',
+      type: 'Renewable Energy',
+      status: 'Active',
+      totalCredits: 62300,
+      currentYear: 18700,
+      fluctuation: '-8.2%',
+      risk: 'Medium',
+      lastUpdate: '2025-09-08',
+      image: 'https://images.pexels.com/photos/356036/pexels-photo-356036.jpeg?auto=compress&cs=tinysrgb&w=400',
+      yearlyData: [
+        { year: '2020', credits: 14200 },
+        { year: '2021', credits: 16800 },
+        { year: '2022', credits: 19500 },
+        { year: '2023', credits: 20400 },
+        { year: '2024', credits: 20400 },
+        { year: '2025', credits: 18700 }
+      ]
+    },
+    {
+      id: 'mangrove-indonesia',
+      name: 'Mangrove Restoration Indonesia',
+      location: 'Java, Indonesia',
+      type: 'Conservation',
+      status: 'Monitoring',
+      totalCredits: 34800,
+      currentYear: 9200,
+      fluctuation: '+25.8%',
+      risk: 'High',
+      lastUpdate: '2025-09-05',
+      image: 'https://images.pexels.com/photos/1179229/pexels-photo-1179229.jpeg?auto=compress&cs=tinysrgb&w=400',
+      yearlyData: [
+        { year: '2020', credits: 4500 },
+        { year: '2021', credits: 6200 },
+        { year: '2022', credits: 8100 },
+        { year: '2023', credits: 7300 },
+        { year: '2024', credits: 7300 },
+        { year: '2025', credits: 9200 }
+      ]
+    },
+    {
+      id: 'wind-energy-brazil',
+      name: 'Wind Energy Brazil',
+      location: 'Bahia, Brazil',
+      type: 'Renewable Energy',
+      status: 'Active',
+      totalCredits: 41200,
+      currentYear: 13800,
+      fluctuation: '+4.7%',
+      risk: 'Low',
+      lastUpdate: '2025-09-11',
+      image: 'https://images.pexels.com/photos/414837/pexels-photo-414837.jpeg?auto=compress&cs=tinysrgb&w=400',
+      yearlyData: [
+        { year: '2020', credits: 9200 },
+        { year: '2021', credits: 11500 },
+        { year: '2022', credits: 13200 },
+        { year: '2023', credits: 13200 },
+        { year: '2024', credits: 13200 },
+        { year: '2025', credits: 13800 }
+      ]
+    }
+  ];
+
+  const currentProject = monitoringProjects.find(p => p.id === selectedMonitoringProject);
 
   const pendingProjects = [
     {
@@ -14,6 +106,7 @@ export const AdminDashboard = () => {
       type: 'Reforestation',
       submittedDate: '2024-01-15',
       expectedCredits: 15000,
+      cumulativeScore: 82,
       area: '500 hectares',
       description: 'Large-scale reforestation project focusing on native species restoration in degraded pasturelands.',
       documents: ['Environmental Impact Assessment', 'Land Use Permits', 'Community Agreements'],
@@ -27,6 +120,7 @@ export const AdminDashboard = () => {
       type: 'Renewable Energy',
       submittedDate: '2024-01-18',
       expectedCredits: 25000,
+      cumulativeScore: 67,
       capacity: '50 MW',
       description: 'Large-scale solar installation providing clean energy to rural communities.',
       documents: ['Technical Specifications', 'Grid Connection Agreement', 'Environmental Clearance'],
@@ -40,6 +134,7 @@ export const AdminDashboard = () => {
       type: 'Conservation',
       submittedDate: '2024-01-20',
       expectedCredits: 12000,
+      cumulativeScore: 43,
       area: '300 hectares',
       description: 'Coastal mangrove restoration project protecting communities from climate impacts.',
       documents: ['Marine Survey Report', 'Community Impact Study', 'Restoration Plan'],
@@ -237,6 +332,153 @@ export const AdminDashboard = () => {
           </div>
         </div>
 
+        {/* Monitoring Dashboard */}
+        <div className="mb-8">
+          <div className="mb-6">
+            <h2 className="text-2xl font-semibold text-gray-800 mb-2">Project Monitoring Dashboard</h2>
+            <p className="text-gray-600">Monitor carbon credit fluctuations and project performance</p>
+          </div>
+
+          <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+            {/* Graph Section */}
+            <div className="lg:col-span-2 bg-white rounded-2xl p-6 shadow-sm">
+              <div className="flex items-center justify-between mb-6">
+                <div>
+                  <h3 className="text-xl font-semibold text-gray-800">{currentProject?.name}</h3>
+                  <p className="text-gray-600 text-sm">{currentProject?.location}</p>
+                </div>
+                <div className="flex items-center space-x-2">
+                  <BarChart3 className="w-5 h-5 text-blue-600" />
+                  <span className="text-sm font-medium text-gray-700">Carbon Credits Over Time</span>
+                </div>
+              </div>
+
+              {/* Simple Bar Chart */}
+              <div className="space-y-4">
+                <div className="flex items-end justify-between h-64 border-b border-gray-200 pb-2">
+                  {currentProject?.yearlyData.map((data, index) => {
+                    const maxCredits = Math.max(...currentProject.yearlyData.map(d => d.credits));
+                    const height = (data.credits / maxCredits) * 240;
+                    const isCurrentYear = data.year === '2025';
+                    
+                    return (
+                      <div key={index} className="flex flex-col items-center flex-1">
+                        <div className="relative flex items-end h-60 w-full justify-center">
+                          <div
+                            className={`w-12 rounded-t-lg transition-all duration-300 ${
+                              isCurrentYear ? 'bg-green-500' : 'bg-blue-500'
+                            } hover:opacity-80`}
+                            style={{ height: `${height}px` }}
+                            title={`${data.year}: ${data.credits.toLocaleString()} credits`}
+                          />
+                        </div>
+                        <div className="mt-2 text-sm text-gray-600 font-medium">{data.year}</div>
+                        <div className="text-xs text-gray-500">{data.credits.toLocaleString()}</div>
+                      </div>
+                    );
+                  })}
+                </div>
+
+                {/* Chart Legend and Stats */}
+                <div className="grid grid-cols-3 gap-4 pt-4">
+                  <div className="bg-blue-50 p-4 rounded-xl">
+                    <div className="text-2xl font-bold text-blue-600">{currentProject?.totalCredits.toLocaleString()}</div>
+                    <div className="text-sm text-gray-600">Total Credits</div>
+                  </div>
+                  <div className="bg-green-50 p-4 rounded-xl">
+                    <div className="text-2xl font-bold text-green-600">{currentProject?.currentYear.toLocaleString()}</div>
+                    <div className="text-sm text-gray-600">2025 Credits</div>
+                  </div>
+                  <div className={`p-4 rounded-xl ${
+                    currentProject?.fluctuation.startsWith('+') ? 'bg-green-50' : 'bg-red-50'
+                  }`}>
+                    <div className={`text-2xl font-bold ${
+                      currentProject?.fluctuation.startsWith('+') ? 'text-green-600' : 'text-red-600'
+                    }`}>
+                      {currentProject?.fluctuation}
+                    </div>
+                    <div className="text-sm text-gray-600">YoY Change</div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            {/* Suggested Projects Sidebar */}
+            <div className="space-y-4">
+              <div className="bg-white rounded-2xl p-6 shadow-sm">
+                <h3 className="text-lg font-semibold text-gray-800 mb-4">Monitored Projects</h3>
+                <div className="space-y-3">
+                  {monitoringProjects.map((project) => {
+                    const isSelected = project.id === selectedMonitoringProject;
+                    const isFluctuating = Math.abs(parseFloat(project.fluctuation.replace('%', ''))) > 10;
+                    
+                    return (
+                      <div
+                        key={project.id}
+                        onClick={() => setSelectedMonitoringProject(project.id)}
+                        className={`p-4 rounded-xl cursor-pointer transition-all duration-200 border-2 ${
+                          isSelected 
+                            ? 'bg-blue-50 border-blue-200' 
+                            : 'bg-gray-50 border-transparent hover:bg-gray-100'
+                        }`}
+                      >
+                        <div className="flex items-start space-x-3">
+                          <img
+                            src={project.image}
+                            alt={project.name}
+                            className="w-12 h-12 rounded-lg object-cover"
+                          />
+                          <div className="flex-1 min-w-0">
+                            <div className="flex items-center space-x-2">
+                              <h4 className="font-medium text-gray-800 text-sm truncate">
+                                {project.name}
+                              </h4>
+                              {isFluctuating && (
+                                <AlertTriangle className="w-4 h-4 text-yellow-500 flex-shrink-0" />
+                              )}
+                            </div>
+                            <p className="text-xs text-gray-600 truncate">{project.location}</p>
+                            <div className="flex items-center justify-between mt-2">
+                              <span className={`text-xs px-2 py-1 rounded-full ${
+                                project.risk === 'Low' ? 'bg-green-100 text-green-700' :
+                                project.risk === 'Medium' ? 'bg-yellow-100 text-yellow-700' :
+                                'bg-red-100 text-red-700'
+                              }`}>
+                                {project.risk} Risk
+                              </span>
+                              <span className={`text-xs font-medium ${
+                                project.fluctuation.startsWith('+') ? 'text-green-600' : 'text-red-600'
+                              }`}>
+                                {project.fluctuation}
+                              </span>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    );
+                  })}
+                </div>
+              </div>
+
+              {/* Quick Actions */}
+              <div className="bg-white rounded-2xl p-6 shadow-sm">
+                <h3 className="text-lg font-semibold text-gray-800 mb-4">Quick Actions</h3>
+                <div className="space-y-3">
+                  <button className="w-full flex items-center justify-center px-4 py-3 bg-blue-600 text-white rounded-xl font-medium hover:bg-blue-700 transition-colors">
+                    <TrendingUp className="w-4 h-4 mr-2" />
+                    Generate Report
+                  </button>
+                  <button className="w-full flex items-center justify-center px-4 py-3 bg-yellow-600 text-white rounded-xl font-medium hover:bg-yellow-700 transition-colors">
+                    <AlertTriangle className="w-4 h-4 mr-2" />
+                    Flag for Review
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+      {/* Monitor Dashboard */}
         {/* Review Windows Section */}
         <div className="mb-8">
           <h2 className="text-2xl font-semibold text-gray-800 mb-6">Review Dashboard</h2>
@@ -289,6 +531,7 @@ export const AdminDashboard = () => {
                   <th className="px-6 py-4 text-left text-sm font-medium text-gray-500 uppercase">Type</th>
                   <th className="px-6 py-4 text-left text-sm font-medium text-gray-500 uppercase">Submitted</th>
                   <th className="px-6 py-4 text-left text-sm font-medium text-gray-500 uppercase">Expected Credits</th>
+                  <th className="px-6 py-4 text-left text-sm font-medium text-gray-500 uppercase">Cumulative Score</th>
                   <th className="px-6 py-4 text-left text-sm font-medium text-gray-500 uppercase">Action</th>
                 </tr>
               </thead>
@@ -317,6 +560,9 @@ export const AdminDashboard = () => {
                     </td>
                     <td className="px-6 py-4 text-gray-700">{project.submittedDate}</td>
                     <td className="px-6 py-4 text-gray-700">{project.expectedCredits.toLocaleString()}</td>
+                    <td className="px-6 py-4">
+                      <ScoreBadge score={project.cumulativeScore} />
+                    </td>
                     <td className="px-6 py-4">
                       <button
                         onClick={() => setSelectedProject(project)}
