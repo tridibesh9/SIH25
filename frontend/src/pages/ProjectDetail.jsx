@@ -1,6 +1,9 @@
 import React, { useState } from 'react';
 import { useParams } from 'react-router-dom';
 import { MapPin, ExternalLink, Shield, Calendar, Globe, Minus, Plus } from 'lucide-react';
+import { MapContainer, TileLayer, GeoJSON } from 'react-leaflet';
+import 'leaflet/dist/leaflet.css';
+import sunderbansData from '../Location-jsons/Sunderbands.json';
 
 export const ProjectDetail = () => {
   const { id } = useParams();
@@ -9,31 +12,61 @@ export const ProjectDetail = () => {
   // Mock project data
   const project = {
     id: 1,
-    title: 'Amazon Rainforest Restoration',
-    type: 'Reforestation',
-    location: 'Acre, Brazil',
+    title: 'Sunderbans Mangrove Restoration',
+    type: 'Mangrove Conservation',
+    location: 'Sunderbans, West Bengal, India',
     images: [
-      'https://images.pexels.com/photos/1632790/pexels-photo-1632790.jpeg?auto=compress&cs=tinysrgb&w=1200',
-      'https://images.pexels.com/photos/1632790/pexels-photo-1632790.jpeg?auto=compress&cs=tinysrgb&w=800',
-      'https://images.pexels.com/photos/1632790/pexels-photo-1632790.jpeg?auto=compress&cs=tinysrgb&w=600'
+      'https://images.unsplash.com/photo-1569163139394-de4e4f43e4e3?auto=format&fit=crop&w=1200&q=80',
+      'https://images.unsplash.com/photo-1573160813043-5e999a2b3f85?auto=format&fit=crop&w=800&q=80',
+      'https://images.unsplash.com/photo-1547036967-23d11aacaee0?auto=format&fit=crop&w=600&q=80'
     ],
-    price: 12,
-    available: 50000,
-    sold: 30,
+    price: 18,
+    available: 75000,
+    sold: 45,
     vintage: 2024,
     verification: 'VCS-verified',
     verificationDocs: 'https://example.com/docs',
-    description: 'This large-scale reforestation project in the Brazilian Amazon focuses on restoring degraded pastureland to native forest. The project works with local communities to plant native tree species, creating biodiversity corridors and sequestering significant amounts of carbon while providing sustainable livelihoods.',
+    description: 'This critical mangrove restoration project in the Sunderbans delta focuses on protecting and restoring one of the world\'s largest mangrove ecosystems. Located in the UNESCO World Heritage Site spanning across India and Bangladesh, the project works with local fishing communities to replant native mangrove species like Sundari, Gewa, and Keora trees. These mangroves create natural barriers against cyclones and storm surges while sequestering significant amounts of blue carbon and providing crucial habitat for endangered species including the Royal Bengal Tiger.',
     impact: {
-      co2Sequestered: '2.1M tonnes',
-      treesPlanted: '500K+',
-      areaRestored: '10,000 hectares',
-      jobsCreated: '1,200'
+      co2Sequestered: '1.8M tonnes',
+      treesPlanted: '350K+',
+      areaRestored: '8,500 hectares',
+      jobsCreated: '950'
     },
-    coordinates: [-9.9747, -67.8243]
+    coordinates: [22.1, 89.0], // Center of Sunderbans
+    territoryData: sunderbansData
   };
 
   const totalPrice = quantity * project.price;
+
+  // Map styling for the territory
+  const territoryStyle = {
+    color: '#059669',
+    weight: 3,
+    fillOpacity: 0.3,
+    fillColor: '#10b981'
+  };
+
+  // Calculate map bounds from territory data
+  const bounds = project.territoryData?.geometry?.coordinates?.[0]?.reduce((acc, coord) => {
+    const [lng, lat] = coord;
+    return {
+      minLat: Math.min(acc.minLat, lat),
+      maxLat: Math.max(acc.maxLat, lat),
+      minLng: Math.min(acc.minLng, lng),
+      maxLng: Math.max(acc.maxLng, lng)
+    };
+  }, {
+    minLat: Infinity,
+    maxLat: -Infinity,
+    minLng: Infinity,
+    maxLng: -Infinity
+  });
+
+  const mapCenter = bounds ? [
+    (bounds.minLat + bounds.maxLat) / 2,
+    (bounds.minLng + bounds.maxLng) / 2
+  ] : project.coordinates;
 
   return (
     <div className="min-h-screen pt-16 bg-gray-50">
@@ -97,26 +130,26 @@ export const ProjectDetail = () => {
 
               {/* Key Metrics */}
               <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
-                <div className="text-center p-4 bg-green-50 rounded-xl">
+                <div className="text-center p-4 bg-green-50 rounded-xl border border-green-100">
                   <div className="text-2xl font-bold text-green-600">{project.impact.co2Sequestered}</div>
-                  <div className="text-sm text-gray-600">CO₂ Sequestered</div>
+                  <div className="text-sm text-gray-600">Blue Carbon Sequestered</div>
                 </div>
-                <div className="text-center p-4 bg-blue-50 rounded-xl">
+                <div className="text-center p-4 bg-blue-50 rounded-xl border border-blue-100">
                   <div className="text-2xl font-bold text-blue-600">{project.impact.treesPlanted}</div>
-                  <div className="text-sm text-gray-600">Trees Planted</div>
+                  <div className="text-sm text-gray-600">Mangroves Planted</div>
                 </div>
-                <div className="text-center p-4 bg-yellow-50 rounded-xl">
-                  <div className="text-2xl font-bold text-yellow-600">{project.impact.areaRestored}</div>
-                  <div className="text-sm text-gray-600">Area Restored</div>
+                <div className="text-center p-4 bg-emerald-50 rounded-xl border border-emerald-100">
+                  <div className="text-2xl font-bold text-emerald-600">{project.impact.areaRestored}</div>
+                  <div className="text-sm text-gray-600">Coastal Area Protected</div>
                 </div>
-                <div className="text-center p-4 bg-purple-50 rounded-xl">
-                  <div className="text-2xl font-bold text-purple-600">{project.impact.jobsCreated}</div>
-                  <div className="text-sm text-gray-600">Jobs Created</div>
+                <div className="text-center p-4 bg-teal-50 rounded-xl border border-teal-100">
+                  <div className="text-2xl font-bold text-teal-600">{project.impact.jobsCreated}</div>
+                  <div className="text-sm text-gray-600">Local Jobs Created</div>
                 </div>
               </div>
 
               {/* Verification */}
-              <div className="border-t pt-6">
+              <div className="border-t pt-6 mb-8">
                 <div className="flex items-center justify-between">
                   <div className="flex items-center">
                     <Shield className="w-5 h-5 text-green-600 mr-2" />
@@ -133,19 +166,105 @@ export const ProjectDetail = () => {
                   </a>
                 </div>
               </div>
+
+              {/* Ecosystem Information */}
+              <div className="bg-gradient-to-r from-green-50 to-blue-50 p-6 rounded-xl border border-green-100 mb-8">
+                <h4 className="text-lg font-semibold text-gray-800 mb-4 flex items-center">
+                  <Globe className="w-5 h-5 text-green-600 mr-2" />
+                  Ecosystem Benefits
+                </h4>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm">
+                  <div className="flex items-start">
+                    <div className="w-2 h-2 bg-green-500 rounded-full mt-2 mr-3 flex-shrink-0"></div>
+                    <div>
+                      <span className="font-medium text-gray-800">Biodiversity Protection:</span>
+                      <span className="text-gray-600 ml-1">Habitat for 260 bird species, Royal Bengal Tigers, and saltwater crocodiles</span>
+                    </div>
+                  </div>
+                  <div className="flex items-start">
+                    <div className="w-2 h-2 bg-blue-500 rounded-full mt-2 mr-3 flex-shrink-0"></div>
+                    <div>
+                      <span className="font-medium text-gray-800">Coastal Protection:</span>
+                      <span className="text-gray-600 ml-1">Natural barrier against cyclones, storms, and sea-level rise</span>
+                    </div>
+                  </div>
+                  <div className="flex items-start">
+                    <div className="w-2 h-2 bg-teal-500 rounded-full mt-2 mr-3 flex-shrink-0"></div>
+                    <div>
+                      <span className="font-medium text-gray-800">Blue Carbon:</span>
+                      <span className="text-gray-600 ml-1">Mangroves store 3-5x more carbon than terrestrial forests</span>
+                    </div>
+                  </div>
+                  <div className="flex items-start">
+                    <div className="w-2 h-2 bg-emerald-500 rounded-full mt-2 mr-3 flex-shrink-0"></div>
+                    <div>
+                      <span className="font-medium text-gray-800">Community Support:</span>
+                      <span className="text-gray-600 ml-1">Sustainable fishing, honey collection, and eco-tourism opportunities</span>
+                    </div>
+                  </div>
+                </div>
+              </div>
             </div>
 
-            {/* Map Placeholder */}
+            {/* Interactive Map */}
             <div className="bg-white rounded-2xl p-8 shadow-sm">
-              <h3 className="text-xl font-semibold text-gray-800 mb-4 flex items-center">
-                <Globe className="w-5 h-5 mr-2" />
-                Project Location
+              <h3 className="text-xl font-semibold text-gray-800 mb-6 flex items-center">
+                <Globe className="w-5 h-5 mr-2 text-green-600" />
+                Project Location & Territory
               </h3>
-              <div className="bg-gray-100 h-64 rounded-xl flex items-center justify-center">
-                <div className="text-center">
-                  <MapPin className="w-12 h-12 text-gray-400 mx-auto mb-2" />
-                  <p className="text-gray-500">Interactive map showing project location</p>
-                  <p className="text-sm text-gray-400">{project.location}</p>
+              
+              <div className="h-80 rounded-xl overflow-hidden border border-gray-200">
+                <MapContainer
+                  center={mapCenter}
+                  zoom={10}
+                  style={{ height: '100%', width: '100%' }}
+                  className="rounded-xl"
+                >
+                  <TileLayer
+                    attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+                    url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
+                  />
+                  
+                  {/* Display project territory */}
+                  {project.territoryData && (
+                    <GeoJSON 
+                      data={project.territoryData} 
+                      style={territoryStyle}
+                    />
+                  )}
+                </MapContainer>
+              </div>
+              
+              {/* Map Info */}
+              <div className="mt-4 flex items-center justify-between">
+                <div className="flex items-center text-sm text-gray-600">
+                  <MapPin className="w-4 h-4 mr-1 text-green-600" />
+                  <span>{project.location}</span>
+                </div>
+                <div className="flex items-center space-x-4 text-sm text-gray-500">
+                  <div className="flex items-center">
+                    <div className="w-3 h-3 bg-green-500 rounded-full mr-2"></div>
+                    Project Area
+                  </div>
+                  <span>
+                    {project.territoryData?.geometry?.coordinates?.[0]?.length - 1} boundary points
+                  </span>
+                </div>
+              </div>
+              
+              {/* Territory Stats */}
+              <div className="mt-6 grid grid-cols-2 gap-4">
+                <div className="bg-green-50 p-4 rounded-lg">
+                  <div className="text-lg font-semibold text-green-700">
+                    {project.impact.areaRestored}
+                  </div>
+                  <div className="text-sm text-green-600">Total Project Area</div>
+                </div>
+                <div className="bg-blue-50 p-4 rounded-lg">
+                  <div className="text-lg font-semibold text-blue-700">
+                    Mangrove Ecosystem
+                  </div>
+                  <div className="text-sm text-blue-600">Habitat Type</div>
                 </div>
               </div>
             </div>
