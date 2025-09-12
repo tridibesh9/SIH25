@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { Leaf, Menu, X, Wallet } from 'lucide-react';
 
-export default Navigation = () => {
+const Navigation = () => {
   const [isScrolled, setIsScrolled] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const location = useLocation();
@@ -49,6 +49,9 @@ export default Navigation = () => {
             <Link to="/marketplace" className={linkClass('/marketplace')}>
               Marketplace
             </Link>
+            <Link to="/map-territory" className={linkClass('/map-territory')}>
+              Register Project
+            </Link>
             <Link to="/dashboard" className={linkClass('/dashboard')}>
               Dashboard
             </Link>
@@ -87,6 +90,9 @@ export default Navigation = () => {
               <Link to="/marketplace" className="block py-2 text-gray-700 hover:text-blue-600">
                 Marketplace
               </Link>
+              <Link to="/map-territory" className="block py-2 text-gray-700 hover:text-blue-600">
+                Register Project
+              </Link>
               <Link to="/dashboard" className="block py-2 text-gray-700 hover:text-blue-600">
                 Dashboard
               </Link>
@@ -109,3 +115,5 @@ export default Navigation = () => {
     </nav>
   );
 };
+
+export default Navigation;

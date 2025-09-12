@@ -8,6 +8,7 @@ import { Dashboard } from './pages/Dashboard.jsx';
 import { Auth } from './pages/Auth.jsx';
 import { AdminDashboard } from './pages/AdminDashboard.jsx';
 import { Certificate } from './pages/Certificate.jsx';
+import { TerritoryMappingPage } from './pages/TerritoryMappingPage.jsx';
 // import { AdminDashboard } from './pages/AdminDashboard.jsx';
 function App() {
   return (
@@ -17,6 +18,7 @@ function App() {
         <Routes>
           <Route path="/" element={<LandingPage />} />
           <Route path="/marketplace" element={<Marketplace />} />
+          <Route path="/map-territory" element={<TerritoryMappingPage />} />
           <Route path="/project/:id" element={<ProjectDetail />} />
           <Route path="/dashboard" element={<Dashboard />} />
           <Route path="/auth" element={<Auth />} />
