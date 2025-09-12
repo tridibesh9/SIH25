@@ -550,10 +550,11 @@ export const TerritoryMappingPage = () => {
               <h3 className="font-semibold text-blue-800 mb-2">Drawing Instructions:</h3>
               <ul className="text-sm text-blue-700 space-y-1">
                 <li>• Click "Draw Territory" to start marking boundaries</li>
-                <li>• Click on the map to add boundary points</li>
-                <li>• Need at least 3 points to create a territory</li>
-                <li>• Territory will auto-complete after 3+ points</li>
-                <li>• Use "Clear" to remove and start over</li>
+                <li>• Click on the map to place boundary points (red markers)</li>
+                <li>• Add at least 3 points to form a valid territory</li>
+                <li>• Click "Complete Territory" when finished</li>
+                <li>• Use "Clear Territory" to remove and start over</li>
+                <li>• Completed territories appear in green</li>
               </ul>
             </div>
 
