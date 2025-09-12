@@ -13,7 +13,7 @@ import {
   Download,
   Info
 } from 'lucide-react';
-import InteractiveMap from '../components/InteractiveMap.jsx';
+import SimpleMap from '../components/SimpleMap.jsx';
 import StepIndicator from '../components/StepIndicator.jsx';
 
 export const TerritoryMappingPage = () => {
@@ -537,7 +537,7 @@ export const TerritoryMappingPage = () => {
 
             {/* Map Container */}
             <div className="h-96 mb-6 rounded-lg overflow-hidden border">
-              <InteractiveMap 
+              <SimpleMap 
                 geojsonData={geojsonData} 
                 onTerritoryDraw={handleTerritoryDraw}
                 center={[22.33, 87.32]}
@@ -549,10 +549,11 @@ export const TerritoryMappingPage = () => {
             <div className="bg-blue-50 border border-blue-200 rounded-lg p-4 mb-6">
               <h3 className="font-semibold text-blue-800 mb-2">Drawing Instructions:</h3>
               <ul className="text-sm text-blue-700 space-y-1">
-                <li>• Click the polygon tool to start drawing</li>
+                <li>• Click "Draw Territory" to start marking boundaries</li>
                 <li>• Click on the map to add boundary points</li>
-                <li>• Double-click to complete the polygon</li>
-                <li>• Use the edit tools to modify your boundary</li>
+                <li>• Need at least 3 points to create a territory</li>
+                <li>• Territory will auto-complete after 3+ points</li>
+                <li>• Use "Clear" to remove and start over</li>
               </ul>
             </div>
 
