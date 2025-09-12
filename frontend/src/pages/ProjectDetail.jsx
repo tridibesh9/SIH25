@@ -3,39 +3,26 @@ import { useParams } from 'react-router-dom';
 import { MapPin, ExternalLink, Shield, Calendar, Globe, Minus, Plus } from 'lucide-react';
 import { MapContainer, TileLayer, GeoJSON } from 'react-leaflet';
 import 'leaflet/dist/leaflet.css';
-import sunderbansData from '../Location-jsons/Sunderbands.json';
+import { projects } from '../data/projects';
 
 export const ProjectDetail = () => {
   const { id } = useParams();
   const [quantity, setQuantity] = useState(1);
 
-  // Mock project data
-  const project = {
-    id: 1,
-    title: 'Sunderbans Mangrove Restoration',
-    type: 'Mangrove Conservation',
-    location: 'Sunderbans, West Bengal, India',
-    images: [
-      'https://images.unsplash.com/photo-1569163139394-de4e4f43e4e3?auto=format&fit=crop&w=1200&q=80',
-      'https://images.unsplash.com/photo-1573160813043-5e999a2b3f85?auto=format&fit=crop&w=800&q=80',
-      'https://images.unsplash.com/photo-1547036967-23d11aacaee0?auto=format&fit=crop&w=600&q=80'
-    ],
-    price: 18,
-    available: 75000,
-    sold: 45,
-    vintage: 2024,
-    verification: 'VCS-verified',
-    verificationDocs: 'https://example.com/docs',
-    description: 'This critical mangrove restoration project in the Sunderbans delta focuses on protecting and restoring one of the world\'s largest mangrove ecosystems. Located in the UNESCO World Heritage Site spanning across India and Bangladesh, the project works with local fishing communities to replant native mangrove species like Sundari, Gewa, and Keora trees. These mangroves create natural barriers against cyclones and storm surges while sequestering significant amounts of blue carbon and providing crucial habitat for endangered species including the Royal Bengal Tiger.',
-    impact: {
-      co2Sequestered: '1.8M tonnes',
-      treesPlanted: '350K+',
-      areaRestored: '8,500 hectares',
-      jobsCreated: '950'
-    },
-    coordinates: [22.1, 89.0], // Center of Sunderbans
-    territoryData: sunderbansData
-  };
+  // Find the project by ID
+  const project = projects.find(p => p.id === parseInt(id));
+
+  // If project not found, show error message
+  if (!project) {
+    return (
+      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+        <div className="text-center">
+          <h1 className="text-2xl font-bold text-gray-900 mb-4">Project Not Found</h1>
+          <p className="text-gray-600">The project you're looking for doesn't exist.</p>
+        </div>
+      </div>
+    );
+  }
 
   const totalPrice = quantity * project.price;
 

@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { Filter, Search, Grid, List, MapPin, Leaf, Zap, Sun } from 'lucide-react';
+import { projects } from '../data/projects.js';
 
 export const Marketplace = () => {
   const [viewMode, setViewMode] = useState('grid');
@@ -15,81 +16,6 @@ export const Marketplace = () => {
     { id: 'reforestation', label: 'Reforestation', icon: Leaf },
     { id: 'renewable', label: 'Renewable Energy', icon: Sun },
     { id: 'methane', label: 'Methane Capture', icon: Zap },
-  ];
-
-  const projects = [
-    {
-      id: 1,
-      title: 'Amazon Rainforest Restoration',
-      type: 'Reforestation',
-      location: 'Brazil',
-      image: 'https://images.pexels.com/photos/1632790/pexels-photo-1632790.jpeg?auto=compress&cs=tinysrgb&w=800',
-      price: 12,
-      available: 50000,
-      sold: 30,
-      vintage: 2024,
-      verification: 'VCS-verified'
-    },
-    {
-      id: 2,
-      title: 'Solar Farm Initiative',
-      type: 'Renewable Energy',
-      location: 'India',
-      image: 'https://images.pexels.com/photos/356036/pexels-photo-356036.jpeg?auto=compress&cs=tinysrgb&w=800',
-      price: 15,
-      available: 75000,
-      sold: 45,
-      vintage: 2024,
-      verification: 'Gold Standard'
-    },
-    {
-      id: 3,
-      title: 'Mangrove Conservation Project',
-      type: 'Conservation',
-      location: 'Indonesia',
-      image: 'https://images.pexels.com/photos/1179229/pexels-photo-1179229.jpeg?auto=compress&cs=tinysrgb&w=800',
-      price: 18,
-      available: 25000,
-      sold: 60,
-      vintage: 2023,
-      verification: 'VCS-verified'
-    },
-    {
-      id: 4,
-      title: 'Wind Energy Development',
-      type: 'Renewable Energy',
-      location: 'Kenya',
-      image: 'https://images.pexels.com/photos/414837/pexels-photo-414837.jpeg?auto=compress&cs=tinysrgb&w=800',
-      price: 14,
-      available: 40000,
-      sold: 25,
-      vintage: 2024,
-      verification: 'Gold Standard'
-    },
-    {
-      id: 5,
-      title: 'Forest Protection Initiative',
-      type: 'Conservation',
-      location: 'Costa Rica',
-      image: 'https://images.pexels.com/photos/1179229/pexels-photo-1179229.jpeg?auto=compress&cs=tinysrgb&w=800',
-      price: 16,
-      available: 35000,
-      sold: 40,
-      vintage: 2024,
-      verification: 'VCS-verified'
-    },
-    {
-      id: 6,
-      title: 'Biomass Energy Project',
-      type: 'Renewable Energy',
-      location: 'Thailand',
-      image: 'https://images.pexels.com/photos/356036/pexels-photo-356036.jpeg?auto=compress&cs=tinysrgb&w=800',
-      price: 13,
-      available: 60000,
-      sold: 35,
-      vintage: 2023,
-      verification: 'Gold Standard'
-    }
   ];
 
   const ProjectCard = ({ project }) => (
