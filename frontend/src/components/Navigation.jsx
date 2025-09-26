@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { Leaf, Menu, X, Wallet } from 'lucide-react';
 
-const Navigation = () => {
+const Navigation = ({setupBlockchain}) => {
   const [isScrolled, setIsScrolled] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const location = useLocation();
@@ -49,9 +49,6 @@ const Navigation = () => {
             <Link to="/marketplace" className={linkClass('/marketplace')}>
               Marketplace
             </Link>
-            <Link to="/map-territory" className={linkClass('/map-territory')}>
-              Register Project
-            </Link>
             <Link to="/dashboard" className={linkClass('/dashboard')}>
               Dashboard
             </Link>
@@ -97,7 +94,9 @@ const Navigation = () => {
                 Dashboard
               </Link>
               <div className="pt-2 border-t">
-                <button className="w-full flex items-center justify-center space-x-2 px-4 py-2 bg-blue-600 text-white rounded-lg mb-2">
+                <button className="w-full flex items-center justify-center space-x-2 px-4 py-2 bg-blue-600 text-white rounded-lg mb-2"
+                  onClick={setupBlockchain}
+                  >
                   <Wallet className="w-4 h-4" />
                   <span>Connect Wallet</span>
                 </button>

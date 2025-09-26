@@ -99,7 +99,7 @@ function App() {
     return (
         <Router>
             <div className="min-h-screen bg-gray-50">
-                <Navigation account={account} />
+                <Navigation account={account} setupBlockchain={setupBlockchain}/>
                 <Routes>
                     <Route path="/" element={<LandingPage />} />
                     <Route path="/auth" element={<Auth setupBlockchain={setupBlockchain} />} />
