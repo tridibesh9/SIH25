@@ -7,6 +7,7 @@ import {
     getAllProjectsOfUser,
     updateCarbonCreditsAndApprove,
     RegisterProjectToChain,
+    RetireProject,
 } from "../Controllers/projectController.js"; // Adjust path
 
 // Import the new controllers and middleware
@@ -40,6 +41,10 @@ router.post("/:projectId/approve", authMiddleware, updateCarbonCreditsAndApprove
 //Route for uploading metadata to IPFS via Pinata
 router.post("/upload-metadata", authMiddleware, RegisterProjectToChain);
 
+
+//Route for genertaing NFT certificate and uploading to IPFS via Pinata
+router.post("/retireproject", RetireProject);
+
 // Route for uploading 1 to 3 project images
 // The form field name must be 'projectImages'
 router.post(
@@ -48,6 +53,8 @@ router.post(
     uploadProjectImages,
     imageUpload
 );
+
+
 
 // Route for uploading a single project document (PDF)
 // The form field name must be 'projectDocument'

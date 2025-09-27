@@ -7,7 +7,7 @@ const projectSchema = new mongoose.Schema(
         // Custom unique ID for the project
         projectId: {
             type: String,
-            default: uuidv4,
+            default: () => uuidv4(),
             unique: true,
             required: true,
             index: true,
@@ -37,7 +37,6 @@ const projectSchema = new mongoose.Schema(
         email: {
             type: String,
             required: [true, "Email is required."],
-            unique: true,
             lowercase: true,
             trim: true,
             match: [/\S+@\S+\.\S+/, "Please use a valid email address."],

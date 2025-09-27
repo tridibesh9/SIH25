@@ -147,10 +147,6 @@ export const ProjectDetail = ({ contract }) => {
                                 <h4 className="font-semibold text-gray-800 mb-4">Project Details & Verification</h4>
                                 <div className="space-y-3 text-gray-700">
                                     <div className="flex justify-between items-center">
-                                        <span className="flex items-center"><Hash className="w-4 h-4 mr-2 text-gray-400" />Project ID</span>
-                                        <span className="font-mono text-xs bg-gray-100 p-1 rounded">{projectOnChain.externalId}</span>
-                                    </div>
-                                    <div className="flex justify-between items-center">
                                         <span className="flex items-center"><User className="w-4 h-4 mr-2 text-gray-400" />Owner Address</span>
                                         <span className="font-mono text-xs bg-gray-100 p-1 rounded">{projectOnChain.ownerAddress}</span>
                                     </div>

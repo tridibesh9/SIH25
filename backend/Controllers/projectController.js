@@ -1,6 +1,10 @@
 import Project from "../models/projectmodel.js"; 
 import User from "../models/usermodel.js";
 import {uploadJsonToPinata} from "./pinataUpload.js";
+import axios from 'axios';
+import { generateAndUploadCertificate } from '../certificate/certificateService.js'; // Import the new function
+
+
 export const fetchProjectsForUser = async (userId, projectIds) => {
     try {
         if (!projectIds || projectIds.length === 0) {
@@ -88,7 +92,7 @@ export const registerProject = async (req, res) => {
 
         // Link project to user
         await User.findOneAndUpdate(
-            { id: userId }, // filter by id field in User model
+            { id: userId },
             { $push: { projects: savedProject.projectId } }
         );
 
@@ -98,9 +102,7 @@ export const registerProject = async (req, res) => {
         });
 
     } catch (error) {
-        if (error.code === 11000) { 
-            return res.status(409).json({ message: "A project with this email or projectId already exists." });
-        }
+        console.error("Registration error:", error);
         res.status(500).json({ message: "Server error during project registration.", error: error.message });
     }
 };
@@ -270,3 +272,64 @@ export const RegisterProjectToChain = async (req, res) => {
 };
 
 
+
+export const RetireProject = async (req, res) => {
+    try {
+        // 1. Destructure the payload from the request body
+        const {
+            projectId,
+            externalId,
+            projectName,
+            quantityRetired,
+            retiredByAddress,
+            transactionHash,
+            DocumentCID,
+            retiredAt,
+        } = req.body;
+
+        // 2. Validate the project
+        const project = await Project.findOne({ projectId: externalId });
+        if (!project) {
+            return res.status(404).json({ message: "Project not found." });
+        }
+        if (project.verificationStatus !== "approved") {
+            return res.status(400).json({ message: "Only approved projects can be retired." });
+        }
+
+        const retirementDetails = {
+            projectId,
+            externalId,
+            projectName,
+            quantityRetired,
+            retiredByAddress,
+            transactionHash,
+            retiredAt,
+        };
+
+        // 3. Fetch original project metadata from Pinata
+        const metadataUrl = `https://gateway.pinata.cloud/ipfs/${DocumentCID}`;
+        const response = await axios.get(metadataUrl);
+        const originalMetadata = response.data;
+
+
+        // 4. Call the certificate service to generate and upload the PDF
+        // The `retirementDetails` object (containing quantityRetired, retiredByAddress, etc.)
+        // and the fetched metadata are passed to the service.
+        const certificateCID = await generateAndUploadCertificate(retirementDetails, originalMetadata);
+
+        // // 5. (Optional) Save the certificate CID to your database if needed
+        // console.log(`Certificate created with CID: ${certificateCID}`);
+
+        // 6. Send the final success response
+        res.status(200).json({
+            message: "Project retired and certificate generated successfully.",
+            certificateCID,
+            certificateUrl: `https://gateway.pinata.cloud/ipfs/${certificateCID}`
+
+        });
+
+    } catch (error) {
+        console.error("Error processing project retirement:", error.response?.data || error.message);
+        res.status(500).json({ message: "An internal server error occurred.", error: error.message });
+    }
+};
