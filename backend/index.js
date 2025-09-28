@@ -6,6 +6,9 @@ import { connectToDatabase } from './db.js';
 
 import userRoute from './Routes/userRoutes.js';
 import projectRoute from './Routes/projectRoutes.js';
+import droneRoute from './Routes/droneRoutes.js';
+import ngoRoute from './Routes/ngoRoutes.js';
+import appointmentRoute from './Routes/appointmentRoutes.js';
 
 const app = express();
 
@@ -51,6 +54,9 @@ connectToDatabase();
 app.use(express.json());
 app.use('/users', userRoute); // use the user route for user registration and login
 app.use('/projects', projectRoute); // use the project route for project management
+app.use('/drones', droneRoute); // use the drone route for drone management
+app.use('/ngos', ngoRoute); // use the ngo route for ngo management
+app.use('/appointments', appointmentRoute); // use the appointment route for appointment management
 
 // Error handling middleware
 app.use((err, req, res, next) => {

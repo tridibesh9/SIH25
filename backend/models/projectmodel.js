@@ -94,6 +94,17 @@ const projectSchema = new mongoose.Schema(
             default: 0,
             min: [0, "Carbon credits cannot be negative."],
         },
+        // NEW: Verification status fields for drone and NGO verification
+        drone_verification_status: {
+            type: String,
+            enum: ['pending', 'verified'],
+            default: 'pending'
+        },
+        ngo_verification_status: {
+            type: String,
+            enum: ['pending', 'verified'],
+            default: 'pending'
+        },
     },
     {
         // Automatically add createdAt and updatedAt timestamps
