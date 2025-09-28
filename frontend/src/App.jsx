@@ -71,11 +71,11 @@ function App() {
                 const signer = await provider.getSigner();
                 const selectedAccount = await signer.getAddress();
                 setAccount(selectedAccount);
-                console.log("🔗 [BLOCKCHAIN] Account connected:", selectedAccount);
+                // console.log("🔗 [BLOCKCHAIN] Account connected:", selectedAccount);
 
                 const contractInstance = new ethers.Contract(contractAddress, contractABI, signer);
                 setContract(contractInstance);
-                console.log("🔗 [BLOCKCHAIN] Contract instance created");
+                // console.log("🔗 [BLOCKCHAIN] Contract instance created");
                 
                 // Test contract connection
                 try {

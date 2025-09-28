@@ -1,4 +1,3 @@
-// src/pages/AdminPanel/adminApiServices.js
 import { backend_url } from '../../api endpoints/backend_url';
 
 const API_BASE_URL = backend_url;
@@ -13,10 +12,10 @@ const apiService = {
     },
 
     async fetchProjectsByStatus(status) {
+        // Use apiService.getHeaders() instead of this.getHeaders()
         const response = await fetch(`${API_BASE_URL}/admin/projects/${status}`, { headers: apiService.getHeaders() });
         if (!response.ok) throw new Error(`Failed to fetch ${status} projects. Status: ${response.status}`);
         const data = await response.json();
-        // console.log(response);
         return data.success ? data.data : [];
     },
     
@@ -24,8 +23,21 @@ const apiService = {
         const response = await fetch(`${API_BASE_URL}/admin/overview`, { headers: apiService.getHeaders() });
         if (!response.ok) throw new Error('Failed to fetch overview');
         const data = await response.json();
-        console.log(data);
         return data.success ? data.data : {};
+    },
+    
+    async fetchNgos() {
+        const response = await fetch(`${API_BASE_URL}/ngos`, { headers: apiService.getHeaders() });
+        if (!response.ok) throw new Error('Failed to fetch NGOs');
+        const data = await response.json();
+        return data.ngos ? data.ngos.map(ngo => ({ ...ngo, _id: String(ngo._id) })) : [];
+    },
+
+    async fetchDrones() {
+        const response = await fetch(`${API_BASE_URL}/drones`, { headers: apiService.getHeaders() });
+        if (!response.ok) throw new Error('Failed to fetch drones');
+        const data = await response.json();
+        return data.drones ? data.drones.map(drone => ({ ...drone, _id: String(drone._id) })) : [];
     },
     
     async movePendingToLandApproval(projectId, message) {
@@ -34,7 +46,6 @@ const apiService = {
             headers: apiService.getHeaders(),
             body: JSON.stringify({ projectId, message })
         });
-        console.log('Response Status:', response.status);
         return await response.json();
     },
     
