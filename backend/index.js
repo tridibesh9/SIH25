@@ -9,6 +9,8 @@ import projectRoute from './Routes/projectRoutes.js';
 import droneRoute from './Routes/droneRoutes.js';
 import ngoRoute from './Routes/ngoRoutes.js';
 import appointmentRoute from './Routes/appointmentRoutes.js';
+import adminPanelRoute from './Routes/adminpanelRoutes.js';
+
 
 const app = express();
 
@@ -57,6 +59,7 @@ app.use('/projects', projectRoute); // use the project route for project managem
 app.use('/drones', droneRoute); // use the drone route for drone management
 app.use('/ngos', ngoRoute); // use the ngo route for ngo management
 app.use('/appointments', appointmentRoute); // use the appointment route for appointment management
+app.use('/admin', adminPanelRoute);
 
 // Error handling middleware
 app.use((err, req, res, next) => {

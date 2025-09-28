@@ -9,7 +9,7 @@ import { Marketplace } from './pages/Marketplace.jsx';
 import { ProjectDetail } from './pages/ProjectDetail.jsx';
 import { Dashboard } from './pages/Dashboard.jsx';
 import { Auth } from './pages/AuthPages/Auth.jsx';
-import { AdminDashboard } from './pages/AdminDashboard.jsx';
+import { AdminDashboard } from './pages/AdminPanel/AdminDashboard.jsx';
 import { Certificate } from './pages/Certificate.jsx';
 import { RegisterProject } from './pages/RegisterProject.jsx';
 import { ProjectOwnerDashboard } from './pages/ProjectOwner/ProjectOwnerDashboard.jsx';

@@ -30,8 +30,8 @@ export const documentUpload = async (req, res) => {
         fs.unlinkSync(filePath);
 
         // Generate a browser-friendly URL for the PDF
-        const browserUrl = `https://res.cloudinary.com/${process.env.CLOUDINARY_CLOUD_NAME}/raw/upload/${result.public_id}.pdf`;
-        console.log("Generated Browser URL:", browserUrl);
+        const browserUrl = result.secure_url;
+        
         res.status(200).json({
             success: true,
             message: 'Document uploaded successfully.',

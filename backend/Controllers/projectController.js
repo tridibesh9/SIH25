@@ -3,7 +3,7 @@ import User from "../models/usermodel.js";
 import {uploadJsonToPinata} from "./pinataUpload.js";
 import axios from 'axios';
 import { generateAndUploadCertificate } from '../certificate/certificateService.js'; // Import the new function
-
+import AdminPanel from "../models/admindetailsmodel.js";
 
 export const fetchProjectsForUser = async (userId, projectIds) => {
     try {
@@ -56,6 +56,16 @@ export const getAllProjectsOfUser = async (req, res) => {
     }
 };
 
+// You should have this helper function available in your controller file
+const ensureAdminPanel = async () => {
+    let adminPanel = await AdminPanel.findOne();
+    if (!adminPanel) {
+        // If it's the very first project, create the admin panel document
+        adminPanel = await AdminPanel.create({});
+    }
+    return adminPanel;
+};
+
 export const registerProject = async (req, res) => {
     try {
         const {
@@ -70,10 +80,12 @@ export const registerProject = async (req, res) => {
             projectImages,
         } = req.body;
         const userId = req.userId; // Extracted from auth middleware
+        
         // Basic validation
         if (!projectName || !owner || !email || !landDocuments || !projectImages) {
             return res.status(400).json({ message: "Please provide all required fields." });
         }
+
         // Create new project instance
         const newProject = new Project({
             projectName,
@@ -96,13 +108,19 @@ export const registerProject = async (req, res) => {
             { $push: { projects: savedProject.projectId } }
         );
 
+        const adminPanel = await ensureAdminPanel();
+        adminPanel.pending.push({
+            projectId: savedProject.projectId,
+            message: "New project submitted for land verification."
+        });
+        await adminPanel.save();
+
         res.status(201).json({
             message: "Project registered successfully. Awaiting verification.",
             project: savedProject,
         });
 
     } catch (error) {
-        console.error("Registration error:", error);
         res.status(500).json({ message: "Server error during project registration.", error: error.message });
     }
 };

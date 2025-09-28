@@ -54,9 +54,9 @@ export const Auth = ({ setupBlockchain, LinkComponent = Link }) => {
                 throw new Error(data.message || 'Login failed.');
             }
 
-            console.log('Login successful:', data);
+            // console.log('Login successful:', data);
             localStorage.setItem('token', data.token);
-            localStorage.setItem('userData', JSON.stringify(data.projects));
+            // localStorage.setItem('userData', JSON.stringify(data.projects));
 
             // Connect to blockchain AFTER successful login
             await setupBlockchain();

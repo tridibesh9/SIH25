@@ -8,7 +8,7 @@ const authMiddleware = (req, res, next) => {
         if (!token) {
             return res.status(401).json({ error: 'Access Denied' }); 
         }
-        const decoded = jwt.verify(token.replace("Bearer",""), JWT_SECRET);
+        const decoded = jwt.verify(token, JWT_SECRET);
         req.userId = decoded.id;
         next();
     }
