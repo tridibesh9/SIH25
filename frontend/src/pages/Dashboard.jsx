@@ -26,20 +26,57 @@ export const Dashboard = ({ contract, account }) => {
             setError(null);
             
             try {
-                console.log("Fetching owned, retired, and listed projects for account:", account);
+                console.log("🔗 [DASHBOARD] Fetching owned, retired, and listed projects for account:", account);
+                console.log("🔗 [DASHBOARD] Contract available:", !!contract);
+                
                 const [owned, retired, listed] = await Promise.all([
-                    contract.getOwnedProjects(account),
-                    contract.getRetiredProjects(account),
-                    contract.getListedProjects(account) // Fetch listed projects
+                    (async () => {
+                        try {
+                            console.log("🔗 [DASHBOARD] Calling getOwnedProjects...");
+                            const result = await contract.getOwnedProjects(account);
+                            console.log("🔗 [DASHBOARD] getOwnedProjects result:", result);
+                            return result;
+                        } catch (err) {
+                            console.error("🔗 [DASHBOARD] getOwnedProjects failed:", err);
+                            return [];
+                        }
+                    })(),
+                    (async () => {
+                        try {
+                            console.log("🔗 [DASHBOARD] Calling getRetiredProjects...");
+                            const result = await contract.getRetiredProjects(account);
+                            console.log("🔗 [DASHBOARD] getRetiredProjects result:", result);
+                            return result;
+                        } catch (err) {
+                            console.error("🔗 [DASHBOARD] getRetiredProjects failed:", err);
+                            return [];
+                        }
+                    })(),
+                    (async () => {
+                        try {
+                            console.log("🔗 [DASHBOARD] Calling getListedProjects...");
+                            const result = await contract.getListedProjects(account);
+                            console.log("🔗 [DASHBOARD] getListedProjects result:", result);
+                            return result;
+                        } catch (err) {
+                            console.error("🔗 [DASHBOARD] getListedProjects failed:", err);
+                            console.error("🔗 [DASHBOARD] Error details:", {
+                                message: err.message,
+                                code: err.code,
+                                data: err.data
+                            });
+                            return [];
+                        }
+                    })()
                 ]);
                 
                 setActiveProjects(owned);
                 setRetiredProjects(retired);
                 setEnlistedProjects(listed); // Set the state for listed projects
                 
-                console.log("Owned projects:", owned);
-                console.log("Retired projects:", retired);
-                console.log("Enlisted projects:", listed);
+                console.log("🔗 [DASHBOARD] Owned projects:", owned);
+                console.log("🔗 [DASHBOARD] Retired projects:", retired);
+                console.log("🔗 [DASHBOARD] Enlisted projects:", listed);
 
             } catch (err) {
                 console.error("Failed to fetch dashboard data:", err);

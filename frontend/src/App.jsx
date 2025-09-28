@@ -50,9 +50,20 @@ function App() {
         const contractABI = CarbonMarketPlaceArtifact.abi;
 
         try {
+            console.log('🔗 [BLOCKCHAIN] Starting blockchain setup...');
+            console.log('🔗 [BLOCKCHAIN] Contract address:', contractAddress);
+            
             if (window.ethereum) {
                 const provider = new ethers.BrowserProvider(window.ethereum);
                 setProvider(provider);
+                console.log('🔗 [BLOCKCHAIN] Provider created');
+
+                // Check network
+                const network = await provider.getNetwork();
+                console.log('🔗 [BLOCKCHAIN] Connected to network:', {
+                    name: network.name,
+                    chainId: network.chainId.toString()
+                });
 
                 // Request account access if not already connected
                 await window.ethereum.request({ method: 'eth_requestAccounts' });
@@ -60,16 +71,31 @@ function App() {
                 const signer = await provider.getSigner();
                 const selectedAccount = await signer.getAddress();
                 setAccount(selectedAccount);
-                console.log("Account connected: ", selectedAccount);
+                console.log("🔗 [BLOCKCHAIN] Account connected:", selectedAccount);
 
                 const contractInstance = new ethers.Contract(contractAddress, contractABI, signer);
                 setContract(contractInstance);
-                console.log("Contract instance created:", contractInstance);
+                console.log("🔗 [BLOCKCHAIN] Contract instance created");
+                
+                // Test contract connection
+                try {
+                    const nextProjectId = await contractInstance.nextProjectId();
+                    console.log("🔗 [BLOCKCHAIN] Contract test successful - nextProjectId:", nextProjectId.toString());
+                } catch (testError) {
+                    console.error("🔗 [BLOCKCHAIN] Contract test failed:", testError);
+                    console.error("🔗 [BLOCKCHAIN] Make sure Hardhat node is running on localhost:8545");
+                }
+                
             } else {
                 alert("MetaMask is not installed. Please install it to use this app.");
             }
         } catch (error) {
-            console.error("Error connecting to blockchain:", error);
+            console.error("🔗 [BLOCKCHAIN] Error connecting to blockchain:", error);
+            console.error("🔗 [BLOCKCHAIN] Error details:", {
+                message: error.message,
+                code: error.code,
+                data: error.data
+            });
         }
     };
 

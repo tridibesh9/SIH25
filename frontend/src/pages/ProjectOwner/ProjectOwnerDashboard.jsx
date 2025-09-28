@@ -33,6 +33,10 @@ export const ProjectOwnerDashboard = ({ contract, account }) => {
             }
 
             try {
+                console.log('🔗 [DASHBOARD] Starting data fetch...');
+                console.log('🔗 [DASHBOARD] Contract:', !!contract);
+                console.log('🔗 [DASHBOARD] Account:', account);
+                
                 const [backendData, onChainData] = await Promise.all([
                     // Fetch backend projects
                     fetch(`${backend_url}/projects/userprojects`, {
@@ -41,8 +45,24 @@ export const ProjectOwnerDashboard = ({ contract, account }) => {
                         if (!res.ok) throw new Error("Failed to fetch projects from server.");
                         return res.json();
                     }),
-                    // Fetch on-chain enlisted projects
-                    (contract && account) ? contract.getListedProjects(account) : Promise.resolve([])
+                    // Fetch on-chain enlisted projects with better error handling
+                    (contract && account) ? (async () => {
+                        try {
+                            console.log('🔗 [DASHBOARD] Calling getListedProjects for account:', account);
+                            const result = await contract.getListedProjects(account);
+                            console.log('🔗 [DASHBOARD] getListedProjects result:', result);
+                            return result;
+                        } catch (contractError) {
+                            console.error('🔗 [DASHBOARD] Contract call failed:', contractError);
+                            console.error('🔗 [DASHBOARD] Error details:', {
+                                message: contractError.message,
+                                code: contractError.code,
+                                data: contractError.data
+                            });
+                            // Return empty array instead of failing completely
+                            return [];
+                        }
+                    })() : Promise.resolve([])
                 ]);
 
                 // Process and set state for backend projects

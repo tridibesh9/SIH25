@@ -44,12 +44,31 @@ const userSchema = new mongoose.Schema(
 // STATIC METHOD: register a new user
 userSchema.statics.register = async function (name, email, password, role) {
   try {
+    console.log('🔐 [USER MODEL] Starting registration validation');
+    console.log('🔐 [USER MODEL] Password being validated:', password);
+    console.log('🔐 [USER MODEL] Password length:', password.length);
+    
     // Validate email and password
     if (!validator.isEmail(email)) {
       throw new Error("Invalid email format.");
     }
+    
+    // Test individual regex components
+    const hasLetter = /(?=.*[A-Za-z])/.test(password);
+    const hasNumber = /(?=.*\d)/.test(password);
+    const hasSpecialChar = /(?=.*[!@#$%^&*])/.test(password);
+    const onlyAllowedChars = /^[A-Za-z\d!@#$%^&*]{8,}$/.test(password);
+    const fullRegex = /^(?=.*[A-Za-z])(?=.*\d)(?=.*[!@#$%^&*])[A-Za-z\d!@#$%^&*]{8,}$/.test(password);
+    
+    console.log('🔐 [USER MODEL] Password validation breakdown:');
+    console.log('  - Has letter:', hasLetter);
+    console.log('  - Has number:', hasNumber);
+    console.log('  - Has special char [!@#$%^&*]:', hasSpecialChar);
+    console.log('  - Only allowed chars:', onlyAllowedChars);
+    console.log('  - Full regex passes:', fullRegex);
+    
     if (
-      !/^(?=.*[A-Za-z])(?=.*\d)(?=.*[!@#$%^&*])[A-Za-z\d!@#$%^&*]{8,}$/.test(
+      !/^(?=.*[A-Za-z])(?=.*\d)(?=.*[!@#$%^&*+=\-_])[A-Za-z\d!@#$%^&*+=\-_]{8,}$/.test(
         password
       )
     ) {
@@ -57,6 +76,8 @@ userSchema.statics.register = async function (name, email, password, role) {
         "Password must be at least 8 characters long and include one letter, one number, and one special character."
       );
     }
+
+    console.log('✅ [USER MODEL] Password validation passed');
 
     // Generate salt and hash password
     const salt = await bcrypt.genSalt(10);
@@ -97,7 +118,7 @@ userSchema.statics.updatenewPassword = async function (
   try {
     // Validate new password
     if (
-      !/^(?=.*[A-Za-z])(?=.*\d)(?=.*[!@#$%^&*])[A-Za-z\d!@#$%^&*]{8,}$/.test(
+      !/^(?=.*[A-Za-z])(?=.*\d)(?=.*[!@#$%^&*+=\-_])[A-Za-z\d!@#$%^&*+=\-_]{8,}$/.test(
         newPassword
       )
     ) {

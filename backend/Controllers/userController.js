@@ -8,14 +8,25 @@ const JWT_SECRET = process.env.JWT_SECRET;
 
 const registerUser = async (req, res) => {
   try {
+    console.log('📝 [USER CONTROLLER] registerUser called');
+    console.log('📝 [USER CONTROLLER] Request body:', { 
+      name: req.body.name, 
+      email: req.body.email, 
+      role: req.body.role,
+      password: req.body.password
+    });
+    
     const { name, email, password, role } = req.body;
     const user = await userModel.register(name, email, password, role);
+    console.log('✅ [USER CONTROLLER] User registered successfully:', { id: user.id, name: user.name, email: user.email });
+    
     const token = jwt.sign({ id: user.id }, JWT_SECRET, {
       expiresIn: "40m",
     });
 
     const projects = await fetchProjectsForUser(user.id, user.projects);
-
+    console.log('📊 [USER CONTROLLER] Fetched projects for user:', projects.length, 'projects');
+    
     res.status(200).json({
       message: "User registered successfully",
       name: user.name,
@@ -23,20 +34,26 @@ const registerUser = async (req, res) => {
       projects,
     });
   } catch (error) {
+    console.error('❌ [USER CONTROLLER] registerUser error:', error.message);
     res.status(400).json({ message: error.message });
   }
 };
 
 const loginUser = async (req, res) => {
   try {
+    console.log('🔐 [USER CONTROLLER] loginUser called');
+    console.log('🔐 [USER CONTROLLER] Login attempt for email:', req.body.email);
+    
     const { email, password } = req.body;
     const user = await userModel.login(email, password);
+    console.log('✅ [USER CONTROLLER] User logged in successfully:', { id: user.id, name: user.name, role: user.role });
 
     const token = jwt.sign({ id: user.id }, JWT_SECRET, {
       expiresIn: "40m",
     });
 
     const projects = await fetchProjectsForUser(user.id, user.projects);
+    console.log('📊 [USER CONTROLLER] Fetched projects for user:', projects.length, 'projects');
 
     res.status(200).json({
       message: "User logged in successfully",
@@ -46,6 +63,7 @@ const loginUser = async (req, res) => {
       role: user.role,
     });
   } catch (error) {
+    console.error('❌ [USER CONTROLLER] loginUser error:', error.message);
     res.status(401).json({ message: error.message });
   }
 };
