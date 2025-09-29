@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { MapPin, BarChart3, TrendingUp, Eye, Filter } from 'lucide-react';
-import TerritorialMap from '../../../components/TerritorialMap';
+import {TerritorialMap} from '../../../components/MAppp';
 
 // Monitoring Panel Component
 export const MonitoringPanel = ({ 

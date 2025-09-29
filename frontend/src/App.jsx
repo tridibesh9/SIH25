@@ -11,7 +11,8 @@ import { Dashboard } from './pages/Dashboard.jsx';
 import { Auth } from './pages/AuthPages/Auth.jsx';
 import { AdminDashboard } from './pages/AdminPanel/AdminDashboard.jsx';
 import { Certificate } from './pages/Certificate.jsx';
-import { RegisterProject } from './pages/RegisterProject.jsx';
+// import { RegisterProject } from './pages/RegisterProject.jsx';
+import RegisterProjectWithTerritory from './pages/RegisterProjectWithTerritory.jsx';
 import { ProjectOwnerDashboard } from './pages/ProjectOwner/ProjectOwnerDashboard.jsx';
 
 import CarbonMarketPlaceArtifact from './artifacts/contracts/CarbonCycle.sol/CarbonMarketplace.json';
@@ -155,7 +156,7 @@ function App() {
                     />
                     <Route
                         path="/owner/register"
-                        element={<RegisterProject />}
+                        element={<RegisterProjectWithTerritory />}
                     />
                     <Route
                         path="/owner/dashboard"
