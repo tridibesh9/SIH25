@@ -1,7 +1,8 @@
 import React, { useState, useEffect, useCallback } from 'react';
-import { Eye, CheckCircle, XCircle, Shield, Users, Bot, RotateCcw, ThumbsDown, ThumbsUp, ExternalLink, ChevronLeft, ChevronRight } from 'lucide-react';
+import { Eye, CheckCircle, XCircle, Shield, Users, Bot, RotateCcw, ThumbsDown, ThumbsUp, ExternalLink, ChevronLeft, ChevronRight, Activity } from 'lucide-react';
 import apiService from './adminApiServices';
 import StatCard from './Components/StatCard';
+import MonitoringMap from '../../components/MonitoringMap';
 
 // --- Helper Components ---
 
@@ -163,7 +164,7 @@ export const AdminDashboard = () => {
     });
     const [loading, setLoading] = useState(true);
     const [selectedProjectForDetails, setSelectedProjectForDetails] = useState(null);
-    const [activeMainTab, setActiveMainTab] = useState('land');
+    const [activeMainTab, setActiveMainTab] = useState('monitoring');
     const [activeNgoTab, setActiveNgoTab] = useState('assigning');
     const [activeDroneTab, setActiveDroneTab] = useState('assigning');
     const [reasons, setReasons] = useState({});
@@ -283,6 +284,7 @@ export const AdminDashboard = () => {
                 </div>
 
                 <div className="flex flex-wrap items-center gap-2 border-b border-gray-200 pb-4 mb-6">
+                    <MainTabButton label="Monitoring Map" value="monitoring" icon={<Activity size={18}/>} count={projects.pending?.length + projects.landApproval?.length + projects.ngoAssigned?.length + projects.droneAssigning?.length + projects.droneAssigned?.length + projects.adminApproval?.length + projects.approved?.length + projects.rejected?.length || 0} activeTab={activeMainTab} setActiveTab={setActiveMainTab}/>
                     <MainTabButton label="Land Verification" value="land" icon={<Shield size={18}/>} count={overview.pending} activeTab={activeMainTab} setActiveTab={setActiveMainTab}/>
                     <MainTabButton label="NGO Verification" value="ngo" icon={<Users size={18}/>} count={(overview.landApproval || 0) + (overview.ngoAssigned || 0)} activeTab={activeMainTab} setActiveTab={setActiveMainTab}/>
                     <MainTabButton label="Drone Verification" value="drone" icon={<Bot size={18}/>} count={(overview.droneAssigning || 0) + (overview.droneAssigned || 0)} activeTab={activeMainTab} setActiveTab={setActiveMainTab}/>
@@ -298,6 +300,17 @@ export const AdminDashboard = () => {
                     </div>
                 ) : (
                     <div>
+                        {activeMainTab === 'monitoring' && (
+                            <div className="mb-8">
+                                <MonitoringMap 
+                                    projects={[...projects.pending, ...projects.landApproval, ...projects.ngoAssigned, ...projects.droneAssigning, ...projects.droneAssigned, ...projects.adminApproval, ...projects.approved, ...projects.rejected]}
+                                    onProjectClick={setSelectedProjectForDetails}
+                                    onRefresh={fetchAllData}
+                                    height="700px"
+                                    className="w-full"
+                                />
+                            </div>
+                        )}
                         {activeMainTab === 'land' && (
                             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 xl:grid-cols-5 gap-6">
                                 {projects.pending.length > 0 ? projects.pending.map(p => (
