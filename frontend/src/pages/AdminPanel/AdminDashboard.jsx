@@ -9,37 +9,42 @@ import MonitoringPanel from './Components/MonitoringPanel';
 
 const StatusBadge = ({ status }) => {
     const styles = {
-        pending: 'bg-yellow-100 text-yellow-800',
-        landApproval: 'bg-blue-100 text-blue-800',
-        ngoAssigning: 'bg-indigo-100 text-indigo-800',
-        ngoAssigned: 'bg-indigo-100 text-indigo-800',
-        droneAssigning: 'bg-purple-100 text-purple-800',
-        droneAssigned: 'bg-purple-100 text-purple-800',
-        adminApproval: 'bg-orange-100 text-orange-800',
-        accepted: 'bg-green-100 text-green-800',
-        approved: 'bg-green-100 text-green-800',
-        rejected: 'bg-red-100 text-red-800',
+        pending: 'bg-gradient-to-r from-yellow-400 to-orange-400 text-white shadow-lg',
+        landApproval: 'bg-gradient-to-r from-blue-500 to-cyan-500 text-white shadow-lg',
+        ngoAssigning: 'bg-gradient-to-r from-indigo-500 to-blue-500 text-white shadow-lg',
+        ngoAssigned: 'bg-gradient-to-r from-indigo-600 to-purple-500 text-white shadow-lg',
+        droneAssigning: 'bg-gradient-to-r from-purple-500 to-pink-500 text-white shadow-lg',
+        droneAssigned: 'bg-gradient-to-r from-purple-600 to-indigo-600 text-white shadow-lg',
+        adminApproval: 'bg-gradient-to-r from-orange-500 to-red-500 text-white shadow-lg',
+        accepted: 'bg-gradient-to-r from-green-500 to-emerald-500 text-white shadow-lg',
+        approved: 'bg-gradient-to-r from-green-600 to-teal-500 text-white shadow-lg',
+        rejected: 'bg-gradient-to-r from-red-500 to-pink-500 text-white shadow-lg',
     };
     const statusText = status ? status.replace(/_/g, ' ') : 'Unknown';
-    return <span className={`px-3 py-1 text-sm font-medium rounded-full capitalize ${styles[status] || 'bg-gray-100 text-gray-800'}`}>{statusText}</span>;
+    return <span className={`px-4 py-2 text-sm font-semibold rounded-full capitalize transition-all duration-300 hover:scale-105 ${styles[status] || 'bg-gradient-to-r from-gray-400 to-gray-500 text-white shadow-lg'}`}>{statusText}</span>;
 };
 
 const ProjectCard = ({ project, children, onDetailsClick }) => (
-    <div className="bg-white rounded-lg shadow-md p-4 border border-gray-200 flex flex-col h-full">
-        <div className="flex-grow">
+    <div className="bg-white/90 backdrop-blur-sm rounded-2xl shadow-xl border border-gray-100 flex flex-col h-full transition-all duration-300 hover:shadow-2xl hover:-translate-y-1 group overflow-hidden">
+        <div className="flex-grow p-5">
             {project.projectImages && project.projectImages.length > 0 ? (
-                 <img src={project.projectImages[0]} alt={project.projectName} className="w-full h-40 object-cover rounded-md mb-4" />
+                 <img src={project.projectImages[0]} alt={project.projectName} className="w-full h-44 object-cover rounded-xl mb-4 transition-transform duration-300 group-hover:scale-105" />
             ) : (
-                <div className="w-full h-40 bg-gray-200 rounded-md mb-4 flex items-center justify-center">
-                    <span className="text-gray-500 text-sm">No Image</span>
+                <div className="w-full h-44 bg-gradient-to-br from-gray-100 to-gray-200 rounded-xl mb-4 flex items-center justify-center transition-all duration-300 group-hover:from-gray-200 group-hover:to-gray-300">
+                    <span className="text-gray-500 text-sm font-medium">No Image</span>
                 </div>
             )}
-            <h4 className="font-bold text-gray-800 text-md leading-tight">{project.projectName}</h4>
-            <p className="text-sm text-gray-500 mb-2">{project.location}</p>
-            <div className="text-xs text-gray-400">Owner: {project.owner}</div>
+            <h4 className="font-bold text-gray-800 text-lg leading-tight mb-2 group-hover:text-blue-700 transition-colors duration-300">{project.projectName}</h4>
+            <div className="flex items-center text-sm text-gray-600 mb-3">
+                <MapPin className="w-4 h-4 mr-1 text-blue-500" />
+                <span>{project.location}</span>
+            </div>
+            <div className="text-sm text-gray-500 bg-gray-50 rounded-lg p-2">
+                <span className="font-medium text-gray-700">Owner:</span> {project.owner}
+            </div>
         </div>
-        <div className="mt-4 space-y-2">
-             <button onClick={() => onDetailsClick(project)} className="w-full bg-gray-100 text-gray-800 px-3 py-2 rounded-md text-sm hover:bg-gray-200 flex items-center justify-center">
+        <div className="p-5 pt-0 space-y-3">
+             <button onClick={() => onDetailsClick(project)} className="w-full bg-gradient-to-r from-blue-500 to-cyan-500 text-white px-4 py-3 rounded-xl text-sm font-semibold hover:from-blue-600 hover:to-cyan-600 transition-all duration-300 flex items-center justify-center shadow-lg hover:shadow-xl">
                 <Eye className="w-4 h-4 mr-2"/> View Details
             </button>
             {children}
@@ -144,15 +149,17 @@ const ProjectDetailsModal = ({ project, onClose }) => {
 };
     
 const MainTabButton = ({ label, value, icon, count, activeTab, setActiveTab }) => (
-    <button onClick={() => setActiveTab(value)} className={`flex items-center space-x-2 px-4 py-2 text-sm font-medium rounded-lg transition-colors duration-200 ${activeTab === value ? 'bg-blue-600 text-white shadow-md' : 'text-gray-600 hover:bg-gray-200'}`}>
-        {icon}
+    <button onClick={() => setActiveTab(value)} className={`flex items-center space-x-3 px-6 py-3 text-sm font-semibold rounded-2xl transition-all duration-300 transform hover:scale-105 ${activeTab === value ? 'bg-gradient-to-r from-blue-600 to-purple-600 text-white shadow-xl' : 'text-gray-700 hover:bg-white hover:shadow-lg bg-gray-50 border border-gray-200'}`}>
+        <div className={`p-1 rounded-lg ${activeTab === value ? 'bg-white/20' : 'bg-blue-100'}`}>
+            {React.cloneElement(icon, { className: `w-4 h-4 ${activeTab === value ? 'text-white' : 'text-blue-600'}` })}
+        </div>
         <span>{label}</span>
-        <span className={`px-2 py-0.5 rounded-full text-xs font-semibold ${activeTab === value ? 'bg-blue-100 text-blue-800' : 'bg-gray-300 text-gray-700'}`}>{count || 0}</span>
+        <span className={`px-3 py-1 rounded-full text-xs font-bold transition-all duration-300 ${activeTab === value ? 'bg-white/20 text-white' : 'bg-blue-100 text-blue-700'}`}>{count || 0}</span>
     </button>
 );
 
 const SubTabButton = ({ label, value, active, setActive, count }) => (
-    <button onClick={() => setActive(value)} className={`px-4 py-1.5 text-sm rounded-md ${active === value ? 'bg-white text-blue-600 font-semibold shadow' : 'text-gray-500 hover:bg-white/50'}`}>
+    <button onClick={() => setActive(value)} className={`px-5 py-2.5 text-sm rounded-xl font-medium transition-all duration-300 ${active === value ? 'bg-white text-blue-600 font-bold shadow-lg transform scale-105' : 'text-gray-600 hover:bg-white/70 hover:text-blue-500'}`}>
         {label} ({count || 0})
     </button>
 );
@@ -451,11 +458,11 @@ export const AdminDashboard = () => {
     };
     
     return (
-        <div className="min-h-screen pt-16 bg-gray-50">
+        <div className="min-h-screen pt-16 bg-gradient-to-br from-gray-50 via-blue-50 to-indigo-50">
             <div className="max-w-full mx-auto px-4 sm:px-6 lg:px-8 py-8">
-                <div className="text-center mb-8">
-                    <h1 className="text-4xl font-extrabold text-gray-800 tracking-tight">Admin Verification Dashboard</h1>
-                    <p className="text-lg text-gray-600 mt-2">Review, approve, and manage carbon credit projects.</p>
+                <div className="text-center mb-10">
+                    <h1 className="text-5xl font-extrabold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent tracking-tight">Admin Verification Dashboard</h1>
+                    <p className="text-xl text-gray-600 mt-4 max-w-2xl mx-auto">Review, approve, and manage carbon credit projects with streamlined workflows.</p>
                 </div>
 
                 {/* Monitoring Panel */}
@@ -483,7 +490,7 @@ export const AdminDashboard = () => {
                     <StatCard title="Rejected" value={overview.rejected || 0} icon={<ThumbsDown size={24} className="text-red-500"/>} colorClass="border-red-500 bg-red-50" />
                 </div>
 
-                <div className="flex flex-wrap items-center gap-2 border-b border-gray-200 pb-4 mb-6">
+                <div className="flex flex-wrap items-center gap-3 border-b border-gray-200 pb-6 mb-8 bg-white rounded-2xl p-6 shadow-lg">
                     <MainTabButton label="Land Verification" value="land" icon={<Shield size={18}/>} count={overview.pending} activeTab={activeMainTab} setActiveTab={setActiveMainTab}/>
                     <MainTabButton label="NGO Verification" value="ngo" icon={<Users size={18}/>} count={(overview.landApproval || 0) + (overview.ngoAssigned || 0)} activeTab={activeMainTab} setActiveTab={setActiveMainTab}/>
                     <MainTabButton label="Drone Verification" value="drone" icon={<Bot size={18}/>} count={(overview.droneAssigning || 0) + (overview.droneAssigned || 0)} activeTab={activeMainTab} setActiveTab={setActiveMainTab}/>
@@ -493,55 +500,73 @@ export const AdminDashboard = () => {
                 </div>
                 
                 {loading ? (
-                    <div className="flex justify-center items-center py-20">
-                        <div className="animate-spin rounded-full h-16 w-16 border-b-2 border-blue-600"></div>
-                        <p className="ml-4 text-gray-600">Loading Projects...</p>
+                    <div className="flex flex-col justify-center items-center py-24">
+                        <div className="relative">
+                            <div className="animate-spin rounded-full h-20 w-20 border-4 border-gray-200"></div>
+                            <div className="animate-spin rounded-full h-20 w-20 border-4 border-blue-600 border-t-transparent absolute top-0 left-0"></div>
+                        </div>
+                        <p className="mt-6 text-gray-600 text-lg font-medium">Loading Projects...</p>
+                        <p className="text-gray-400 text-sm">Please wait while we fetch the latest data</p>
                     </div>
                 ) : (
                     <div>
                         {activeMainTab === 'land' && (
-                            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 xl:grid-cols-5 gap-6">
+                            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8">
                                 {projects.pending.length > 0 ? projects.pending.map(p => (
                                     <ProjectCard key={p.projectId} project={p} onDetailsClick={setSelectedProjectForDetails}>
-                                        <div className="flex space-x-2 mt-2">
-                                            <button onClick={() => handleLandApproval(p.projectId)} className="w-full bg-green-500 text-white px-3 py-2 rounded-md text-sm hover:bg-green-600">Approve</button>
-                                            <button onClick={() => handleReject(p.projectId)} className="w-full bg-red-500 text-white px-3 py-2 rounded-md text-sm hover:bg-red-600">Reject</button>
+                                        <div className="flex space-x-2">
+                                            <button onClick={() => handleLandApproval(p.projectId)} className="flex-1 bg-gradient-to-r from-green-500 to-emerald-500 text-white px-4 py-3 rounded-xl text-sm font-semibold hover:from-green-600 hover:to-emerald-600 transition-all duration-300 shadow-lg hover:shadow-xl transform hover:scale-105 flex items-center justify-center">
+                                                <CheckCircle className="w-4 h-4 mr-2" />Approve
+                                            </button>
+                                            <button onClick={() => handleReject(p.projectId)} className="flex-1 bg-gradient-to-r from-red-500 to-pink-500 text-white px-4 py-3 rounded-xl text-sm font-semibold hover:from-red-600 hover:to-pink-600 transition-all duration-300 shadow-lg hover:shadow-xl transform hover:scale-105 flex items-center justify-center">
+                                                <XCircle className="w-4 h-4 mr-2" />Reject
+                                            </button>
                                         </div>
-                                        <textarea value={reasons[p.projectId] || ''} onChange={(e) => setReasons(prev => ({...prev, [p.projectId]: e.target.value}))} placeholder="Rejection reason..." className="mt-2 w-full border-gray-300 rounded-md shadow-sm text-sm p-2"/>
+                                        <textarea value={reasons[p.projectId] || ''} onChange={(e) => setReasons(prev => ({...prev, [p.projectId]: e.target.value}))} placeholder="Enter rejection reason..." className="w-full border-0 bg-gray-50 rounded-xl shadow-inner text-sm p-4 focus:outline-none focus:ring-2 focus:ring-blue-400 focus:bg-white transition-all duration-300 resize-none" rows="3"/>
                                     </ProjectCard>
-                                )) : <p className="text-lg text-gray-500 col-span-full text-center py-10">No projects pending land verification.</p>}
+                                )) : <p className="text-xl text-gray-500 col-span-full text-center py-16 font-medium">No projects pending land verification.</p>}
                             </div>
                         )}
                         {activeMainTab === 'ngo' && (
                             <div>
-                                <div className="bg-gray-200 p-1 rounded-lg flex items-center space-x-2 mb-6 max-w-sm">
+                                <div className="bg-gradient-to-r from-gray-100 to-gray-200 p-2 rounded-2xl flex items-center space-x-2 mb-8 max-w-md">
                                     <SubTabButton label="Awaiting Assignment" value="assigning" active={activeNgoTab} setActive={setActiveNgoTab} count={overview.landApproval}/>
                                     <SubTabButton label="Awaiting Approval" value="approval" active={activeNgoTab} setActive={setActiveNgoTab} count={overview.ngoAssigned}/>
                                 </div>
                                 {activeNgoTab === 'assigning' && (
-                                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 xl:grid-cols-5 gap-6">
+                                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8">
                                         {projects.landApproval.map(p => (
                                             <ProjectCard key={p.projectId} project={p} onDetailsClick={setSelectedProjectForDetails}>
-                                                <div className="space-y-2 mt-2">
-                                                    <select id={`ngo-${p.projectId}`} className="w-full border-gray-300 rounded-md shadow-sm p-2 text-sm">
+                                                <div className="space-y-3">
+                                                    <select id={`ngo-${p.projectId}`} className="w-full border-0 bg-gray-50 rounded-xl shadow-inner p-3 text-sm focus:outline-none focus:ring-2 focus:ring-blue-400 focus:bg-white transition-all duration-300">
                                                         {availableNgos.map(ngo => <option key={ngo._id} value={ngo._id}>{ngo.name} ({ngo.location})</option>)}
                                                     </select>
-                                                    <button onClick={() => handleAssignNgo(p.projectId, document.getElementById(`ngo-${p.projectId}`).value)} className="w-full bg-blue-500 text-white px-3 py-2 rounded-md text-sm hover:bg-blue-600">Assign NGO</button>
+                                                    <button onClick={() => handleAssignNgo(p.projectId, document.getElementById(`ngo-${p.projectId}`).value)} className="w-full bg-gradient-to-r from-blue-500 to-indigo-500 text-white px-4 py-3 rounded-xl text-sm font-semibold hover:from-blue-600 hover:to-indigo-600 transition-all duration-300 shadow-lg hover:shadow-xl transform hover:scale-105 flex items-center justify-center">
+                                                        <Users className="w-4 h-4 mr-2" />Assign NGO
+                                                    </button>
                                                 </div>
                                             </ProjectCard>
                                         ))}
                                     </div>
                                 )}
                                 {activeNgoTab === 'approval' && (
-                                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 xl:grid-cols-5 gap-6">
+                                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8">
                                         {projects.ngoAssigned.map(p => (
                                             <ProjectCard key={p.projectId} project={p} onDetailsClick={setSelectedProjectForDetails}>
-                                                <p className="text-xs my-2 p-2 bg-blue-50 rounded">NGO Report Submitted</p>
-                                                <div className="flex space-x-2">
-                                                    <button onClick={() => handleNgoApproval(p.projectId)} className="w-full bg-green-500 text-white px-3 py-2 rounded-md text-sm hover:bg-green-600">Approve</button>
-                                                    <button onClick={() => handleChangeStatus(p.projectId, 'pending')} className="w-full bg-yellow-500 text-white px-3 py-2 rounded-md text-sm hover:bg-yellow-600">Redo</button>
+                                                <div className="bg-gradient-to-r from-blue-50 to-indigo-50 p-3 rounded-xl mb-3 border border-blue-100">
+                                                    <p className="text-sm font-medium text-blue-700 flex items-center">
+                                                        <Users className="w-4 h-4 mr-2" />NGO Report Submitted
+                                                    </p>
                                                 </div>
-                                                <textarea value={reasons[`redo-${p.projectId}`] || ''} onChange={(e) => setReasons(prev => ({...prev, [`redo-${p.projectId}`]: e.target.value}))} placeholder="Reason for redo..." className="mt-2 w-full border-gray-300 rounded-md shadow-sm text-sm p-2"/>
+                                                <div className="flex space-x-2 mb-3">
+                                                    <button onClick={() => handleNgoApproval(p.projectId)} className="flex-1 bg-gradient-to-r from-green-500 to-emerald-500 text-white px-4 py-3 rounded-xl text-sm font-semibold hover:from-green-600 hover:to-emerald-600 transition-all duration-300 shadow-lg hover:shadow-xl transform hover:scale-105 flex items-center justify-center">
+                                                        <CheckCircle className="w-4 h-4 mr-1" />Approve
+                                                    </button>
+                                                    <button onClick={() => handleChangeStatus(p.projectId, 'pending')} className="flex-1 bg-gradient-to-r from-yellow-500 to-orange-500 text-white px-4 py-3 rounded-xl text-sm font-semibold hover:from-yellow-600 hover:to-orange-600 transition-all duration-300 shadow-lg hover:shadow-xl transform hover:scale-105 flex items-center justify-center">
+                                                        <RotateCcw className="w-4 h-4 mr-1" />Redo
+                                                    </button>
+                                                </div>
+                                                <textarea value={reasons[`redo-${p.projectId}`] || ''} onChange={(e) => setReasons(prev => ({...prev, [`redo-${p.projectId}`]: e.target.value}))} placeholder="Enter reason for redo..." className="w-full border-0 bg-gray-50 rounded-xl shadow-inner text-sm p-4 focus:outline-none focus:ring-2 focus:ring-blue-400 focus:bg-white transition-all duration-300 resize-none" rows="3"/>
                                             </ProjectCard>
                                         ))}
                                     </div>
@@ -550,20 +575,22 @@ export const AdminDashboard = () => {
                         )}
                         {activeMainTab === 'drone' && (
                              <div>
-                                <div className="bg-gray-200 p-1 rounded-lg flex items-center space-x-2 mb-6 max-w-sm">
+                                <div className="bg-gradient-to-r from-gray-100 to-gray-200 p-2 rounded-2xl flex items-center space-x-2 mb-8 max-w-md">
                                     <SubTabButton label="Awaiting Assignment" value="assigning" active={activeDroneTab} setActive={setActiveDroneTab} count={overview.droneAssigning}/>
                                     <SubTabButton label="Awaiting Approval" value="approval" active={activeDroneTab} setActive={setActiveDroneTab} count={overview.droneAssigned}/>
                                 </div>
                                 
                                 {activeDroneTab === 'assigning' && (
-                                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 xl:grid-cols-5 gap-6">
+                                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8">
                                         {projects.droneAssigning.map(p => (
                                             <ProjectCard key={p.projectId} project={p} onDetailsClick={setSelectedProjectForDetails}>
-                                                <div className="space-y-2 mt-2">
-                                                    <select id={`drone-${p.projectId}`} className="w-full border-gray-300 rounded-md shadow-sm p-2 text-sm">
+                                                <div className="space-y-3">
+                                                    <select id={`drone-${p.projectId}`} className="w-full border-0 bg-gray-50 rounded-xl shadow-inner p-3 text-sm focus:outline-none focus:ring-2 focus:ring-purple-400 focus:bg-white transition-all duration-300">
                                                         {availableDrones.map(drone => <option key={drone._id} value={drone._id}>{drone.model_name} ({drone.serving_location})</option>)}
                                                     </select>
-                                                    <button onClick={() => handleAssignDrone(p.projectId, document.getElementById(`drone-${p.projectId}`).value)} className="w-full bg-indigo-500 text-white px-3 py-2 rounded-md text-sm hover:bg-indigo-600">Assign Drone</button>
+                                                    <button onClick={() => handleAssignDrone(p.projectId, document.getElementById(`drone-${p.projectId}`).value)} className="w-full bg-gradient-to-r from-purple-500 to-indigo-500 text-white px-4 py-3 rounded-xl text-sm font-semibold hover:from-purple-600 hover:to-indigo-600 transition-all duration-300 shadow-lg hover:shadow-xl transform hover:scale-105 flex items-center justify-center">
+                                                        <Bot className="w-4 h-4 mr-2" />Assign Drone
+                                                    </button>
                                                 </div>
                                             </ProjectCard>
                                         ))}
@@ -571,15 +598,23 @@ export const AdminDashboard = () => {
                                 )}
                                 
                                 {activeDroneTab === 'approval' && (
-                                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 xl:grid-cols-5 gap-6">
+                                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8">
                                         {projects.droneAssigned.map(p => (
                                             <ProjectCard key={p.projectId} project={p} onDetailsClick={setSelectedProjectForDetails}>
-                                                <p className="text-xs my-2 p-2 bg-indigo-50 rounded">Drone Survey Complete</p>
-                                                <div className="flex space-x-2">
-                                                    <button onClick={() => handleDroneApproval(p.projectId)} className="w-full bg-green-500 text-white px-3 py-2 rounded-md text-sm hover:bg-green-600">Approve</button>
-                                                    <button onClick={() => handleChangeStatus(p.projectId, 'landApproval')} className="w-full bg-yellow-500 text-white px-3 py-2 rounded-md text-sm hover:bg-yellow-600">Redo</button>
+                                                <div className="bg-gradient-to-r from-purple-50 to-indigo-50 p-3 rounded-xl mb-3 border border-purple-100">
+                                                    <p className="text-sm font-medium text-purple-700 flex items-center">
+                                                        <Bot className="w-4 h-4 mr-2" />Drone Survey Complete
+                                                    </p>
                                                 </div>
-                                                <textarea value={reasons[`redo-${p.projectId}`] || ''} onChange={(e) => setReasons(prev => ({...prev, [`redo-${p.projectId}`]: e.target.value}))} placeholder="Reason for redo..." className="mt-2 w-full border-gray-300 rounded-md shadow-sm text-sm p-2"/>
+                                                <div className="flex space-x-2 mb-3">
+                                                    <button onClick={() => handleDroneApproval(p.projectId)} className="flex-1 bg-gradient-to-r from-green-500 to-emerald-500 text-white px-4 py-3 rounded-xl text-sm font-semibold hover:from-green-600 hover:to-emerald-600 transition-all duration-300 shadow-lg hover:shadow-xl transform hover:scale-105 flex items-center justify-center">
+                                                        <CheckCircle className="w-4 h-4 mr-1" />Approve
+                                                    </button>
+                                                    <button onClick={() => handleChangeStatus(p.projectId, 'landApproval')} className="flex-1 bg-gradient-to-r from-yellow-500 to-orange-500 text-white px-4 py-3 rounded-xl text-sm font-semibold hover:from-yellow-600 hover:to-orange-600 transition-all duration-300 shadow-lg hover:shadow-xl transform hover:scale-105 flex items-center justify-center">
+                                                        <RotateCcw className="w-4 h-4 mr-1" />Redo
+                                                    </button>
+                                                </div>
+                                                <textarea value={reasons[`redo-${p.projectId}`] || ''} onChange={(e) => setReasons(prev => ({...prev, [`redo-${p.projectId}`]: e.target.value}))} placeholder="Enter reason for redo..." className="w-full border-0 bg-gray-50 rounded-xl shadow-inner text-sm p-4 focus:outline-none focus:ring-2 focus:ring-purple-400 focus:bg-white transition-all duration-300 resize-none" rows="3"/>
                                             </ProjectCard>
                                         ))}
                                     </div>
@@ -587,46 +622,71 @@ export const AdminDashboard = () => {
                             </div>
                         )}
                         {activeMainTab === 'admin' && (
-                             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 xl:grid-cols-5 gap-6">
+                             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8">
                                 {projects.adminApproval.length > 0 ? projects.adminApproval.map(p => (
                                     <ProjectCard key={p.projectId} project={p} onDetailsClick={setSelectedProjectForDetails}>
-                                        <div className="space-y-2 mt-2">
-                                            <button onClick={() => handleFinalApproval(p.projectId)} className="w-full bg-green-500 text-white px-3 py-2 rounded-md text-sm hover:bg-green-600">Final Approve</button>
-                                            <button onClick={() => handleReject(p.projectId)} className="w-full bg-red-500 text-white px-3 py-2 rounded-md text-sm hover:bg-red-600">Reject</button>
-                                            <textarea value={reasons[p.projectId] || ''} onChange={(e) => setReasons(prev => ({...prev, [p.projectId]: e.target.value}))} placeholder="Rejection reason..." className="mt-2 w-full border-gray-300 rounded-md shadow-sm text-sm p-2"/>
-                                            <hr className="my-2"/>
-                                            <select id={`redo-${p.projectId}`} className="w-full border-gray-300 rounded-md shadow-sm text-sm p-2">
-                                                <option value="land approval">Redo to Land Approval</option>
-                                                <option value="ngo">Redo to NGO Verification</option>
-                                                <option value="drones">Redo to Drone Verification</option>
-                                            </select>
-                                            <button onClick={() => handleChangeStatus(p.projectId, document.getElementById(`redo-${p.projectId}`).value)} className="w-full bg-yellow-500 text-white px-3 py-2 rounded-md text-sm hover:bg-yellow-600 flex items-center justify-center">
-                                                <RotateCcw className="w-4 h-4 mr-1"/> Request Redo
-                                            </button>
-                                            <textarea value={reasons[`redo-${p.projectId}`] || ''} onChange={(e) => setReasons(prev => ({...prev, [`redo-${p.projectId}`]: e.target.value}))} placeholder="Reason for redo..." className="mt-2 w-full border-gray-300 rounded-md shadow-sm text-sm p-2"/>
+                                        <div className="space-y-3">
+                                            <div className="flex space-x-2">
+                                                <button onClick={() => handleFinalApproval(p.projectId)} className="flex-1 bg-gradient-to-r from-green-500 to-emerald-500 text-white px-4 py-3 rounded-xl text-sm font-semibold hover:from-green-600 hover:to-emerald-600 transition-all duration-300 shadow-lg hover:shadow-xl transform hover:scale-105 flex items-center justify-center">
+                                                    <CheckCircle className="w-4 h-4 mr-2" />Final Approve
+                                                </button>
+                                                <button onClick={() => handleReject(p.projectId)} className="flex-1 bg-gradient-to-r from-red-500 to-pink-500 text-white px-4 py-3 rounded-xl text-sm font-semibold hover:from-red-600 hover:to-pink-600 transition-all duration-300 shadow-lg hover:shadow-xl transform hover:scale-105 flex items-center justify-center">
+                                                    <XCircle className="w-4 h-4 mr-2" />Reject
+                                                </button>
+                                            </div>
+                                            <textarea value={reasons[p.projectId] || ''} onChange={(e) => setReasons(prev => ({...prev, [p.projectId]: e.target.value}))} placeholder="Enter rejection reason..." className="w-full border-0 bg-gray-50 rounded-xl shadow-inner text-sm p-4 focus:outline-none focus:ring-2 focus:ring-red-400 focus:bg-white transition-all duration-300 resize-none" rows="3"/>
+                                            <div className="border-t border-gray-200 pt-3">
+                                                <label className="text-sm font-medium text-gray-700 mb-2 block">Send Back To:</label>
+                                                <select id={`redo-${p.projectId}`} className="w-full border-0 bg-gray-50 rounded-xl shadow-inner text-sm p-3 focus:outline-none focus:ring-2 focus:ring-orange-400 focus:bg-white transition-all duration-300 mb-3">
+                                                    <option value="land approval">🏞️ Land Verification</option>
+                                                    <option value="ngo">👥 NGO Verification</option>
+                                                    <option value="drones">🚁 Drone Verification</option>
+                                                </select>
+                                                <button onClick={() => handleChangeStatus(p.projectId, document.getElementById(`redo-${p.projectId}`).value)} className="w-full bg-gradient-to-r from-yellow-500 to-orange-500 text-white px-4 py-3 rounded-xl text-sm font-semibold hover:from-yellow-600 hover:to-orange-600 transition-all duration-300 shadow-lg hover:shadow-xl transform hover:scale-105 flex items-center justify-center">
+                                                    <RotateCcw className="w-4 h-4 mr-2"/> Send Back
+                                                </button>
+                                                <textarea value={reasons[`redo-${p.projectId}`] || ''} onChange={(e) => setReasons(prev => ({...prev, [`redo-${p.projectId}`]: e.target.value}))} placeholder="Enter reason for sending back..." className="mt-3 w-full border-0 bg-gray-50 rounded-xl shadow-inner text-sm p-4 focus:outline-none focus:ring-2 focus:ring-orange-400 focus:bg-white transition-all duration-300 resize-none" rows="3"/>
+                                            </div>
                                         </div>
                                     </ProjectCard>
-                                )) : <p className="text-lg text-gray-500 col-span-full text-center py-10">No projects awaiting final approval.</p>}
+                                )) : <p className="text-xl text-gray-500 col-span-full text-center py-16 font-medium">No projects awaiting final approval.</p>}
                             </div>
                         )}
                         {activeMainTab === 'approved' && (
-                             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 xl:grid-cols-5 gap-6">
+                             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8">
                                 {projects.approved.length > 0 ? projects.approved.map(p => (
                                     <ProjectCard key={p.projectId} project={p} onDetailsClick={setSelectedProjectForDetails}>
-                                        <div className='mt-2'><StatusBadge status={p.verificationStatus} /></div>
-                                        {p.carbonCredits && <p className="text-xs text-green-600 mt-2 p-2 bg-green-50 rounded"><strong>Carbon Credits:</strong> {p.carbonCredits}</p>}
+                                        <div className="space-y-3">
+                                            <StatusBadge status={p.verificationStatus} />
+                                            {p.carbonCredits && (
+                                                <div className="bg-gradient-to-r from-green-50 to-emerald-50 p-4 rounded-xl border border-green-200">
+                                                    <p className="text-sm font-semibold text-green-700 flex items-center">
+                                                        <span className="w-2 h-2 bg-green-500 rounded-full mr-2"></span>
+                                                        Carbon Credits: {p.carbonCredits}
+                                                    </p>
+                                                </div>
+                                            )}
+                                        </div>
                                     </ProjectCard>
-                                )) : <p className="text-lg text-gray-500 col-span-full text-center py-10">No approved projects.</p>}
+                                )) : <p className="text-xl text-gray-500 col-span-full text-center py-16 font-medium">No approved projects.</p>}
                             </div>
                         )}
                         {activeMainTab === 'rejected' && (
-                            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 xl:grid-cols-5 gap-6">
+                            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8">
                                 {projects.rejected.length > 0 ? projects.rejected.map(p => (
                                     <ProjectCard key={p.projectId} project={p} onDetailsClick={setSelectedProjectForDetails}>
-                                        <div className='mt-2'><StatusBadge status={p.verificationStatus} /></div>
-                                        {p.message && <p className="text-xs text-red-600 mt-2 p-2 bg-red-50 rounded"><strong>Reason:</strong> {p.message}</p>}
+                                        <div className="space-y-3">
+                                            <StatusBadge status={p.verificationStatus} />
+                                            {p.message && (
+                                                <div className="bg-gradient-to-r from-red-50 to-pink-50 p-4 rounded-xl border border-red-200">
+                                                    <p className="text-sm font-semibold text-red-700">
+                                                        <span className="font-bold">Reason:</span> {p.message}
+                                                    </p>
+                                                </div>
+                                            )}
+                                        </div>
                                     </ProjectCard>
-                                )) : <p className="text-lg text-gray-500 col-span-full text-center py-10">No rejected projects.</p>}
+                                )) : <p className="text-xl text-gray-500 col-span-full text-center py-16 font-medium">No rejected projects.</p>}
                             </div>
                         )}
                     </div>
