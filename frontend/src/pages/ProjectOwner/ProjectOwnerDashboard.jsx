@@ -122,11 +122,14 @@ export const ProjectOwnerDashboard = ({ contract, account }) => {
             
             const formattedPriceInEth = priceInEth.toFixed(18);
             const valuePerCarbonWei = ethers.parseEther(formattedPriceInEth);
-            
+            console.log(contract);
+            console.log("doing on-chain registration with values:");
+
             const transaction = await contract.registerProject(
                 project.projectId, project.projectName, documentCID,
-                valuePerCarbonWei, project.carbonCredits, project.owner
+                valuePerCarbonWei, project.carbonCredits
             );
+            console.log("🔗 Transaction sent. Awaiting confirmation...", transaction);
             await transaction.wait();
             alert("Project successfully enlisted!");
         } catch (err) {

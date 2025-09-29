@@ -11,25 +11,26 @@ contract CarbonMarketplace {
         unlocked = 1;
     }
 
-    enum ProjectStatus { ForSale, Owned, Retired }
+    // enum ProjectStatus { ForSale, Owned, Retired }
 
     struct Project {
-        uint256 projectId;
+        uint32 projectId;
         string externalId;
         string projectName;
         string documentCID;
         string certificateCID;
         uint256 valuePerCarbon;
         uint256 quantity;
-        string ownerName;
+        // string ownerName;
         address ownerAddress;
         uint256 createdAt;
         bool isResold;
-        ProjectStatus status;
+        // ProjectStatus status;
+        uint32 status; // 0: ForSale, 1: Owned, 2: Retired
         uint256 marketplaceIndex;
     }
 
-    uint256 public nextProjectId = 1;
+    uint32 public nextProjectId = 1;
     mapping(uint256 => Project) public projects;
 
     mapping(address => uint256[]) public ownedProjects;
@@ -37,44 +38,10 @@ contract CarbonMarketplace {
     mapping(address => uint256[]) public retiredProjects;
     uint256[] public marketplace;
 
-    // --- Events ---
-    event ProjectRegistered(
-        uint256 indexed projectId,
-        string externalId,
-        string name,
-        string documentCID,
-        uint256 value,
-        uint256 quantity,
-        string ownerName,
-        address indexed owner
-    );
-    event ProjectBought(
-        uint256 indexed originalProjectId,
-        uint256 indexed newOwnedProjectId,
-        string externalId,
-        address indexed buyer,
-        uint256 quantity,
-        uint256 totalPrice
-    );
-    event ProjectResold(
-        uint256 indexed originalOwnedProjectId,
-        uint256 indexed newForSaleProjectId,
-        string externalId,
-        address indexed seller,
-        uint256 valuePerCarbon,
-        uint256 quantity
-    );
-    event ProjectRetired(
-        uint256 indexed originalOwnedProjectId,
-        uint256 indexed newRetiredProjectId,
-        address indexed owner,
-        uint256 quantity
-    );
-    event CertificateAdded(uint256 indexed retiredProjectId, string certificateCID);
 
     // --- Modifiers ---
     modifier projectIsForSale(uint256 _projectId) {
-        require(projects[_projectId].status == ProjectStatus.ForSale, "Project not for sale");
+        require(projects[_projectId].status == 0, "Project not for sale");
         _;
     }
     modifier quantityInLimit(uint256 _projectId, uint256 _quantity) {
@@ -97,8 +64,9 @@ contract CarbonMarketplace {
         string memory _projectName,
         string memory _documentCID,
         uint256 _valuePerCarbon,
-        uint256 _quantity,
-        string memory _ownerName
+        uint256 _quantity
+        
+        // ,string memory _ownerName
     ) external {
         require(_valuePerCarbon > 0, "Value must be greater than 0");
         require(_quantity > 0, "Quantity must be greater than 0");
@@ -109,7 +77,7 @@ contract CarbonMarketplace {
             _documentCID,
             _valuePerCarbon,
             _quantity,
-            _ownerName,
+            // _ownerName,
             msg.sender,
             block.timestamp,
             false
@@ -119,7 +87,7 @@ contract CarbonMarketplace {
         marketplace.push(projectId);
         listedProjects[msg.sender].push(projectId);
 
-        emit ProjectRegistered(projectId, _externalId, _projectName, _documentCID, _valuePerCarbon, _quantity, _ownerName, msg.sender);
+
     }
 
     function buyProject(uint256 _projectId, uint256 _quantity)
@@ -139,23 +107,24 @@ contract CarbonMarketplace {
             _removeFromListedProjects(forSaleProject.ownerAddress, _projectId);
         }
 
-        uint256 newOwnedProjectId = _createOwnedProject(forSaleProject, msg.sender, _quantity);
+        // uint256 newOwnedProjectId = _createOwnedProject(forSaleProject, msg.sender, _quantity);
 
         (bool success, ) = forSaleProject.ownerAddress.call{value: msg.value}("");
         require(success, "Failed to send Ether");
 
-        emit ProjectBought(_projectId, newOwnedProjectId, forSaleProject.externalId, msg.sender, _quantity, msg.value);
+
     }
 
     function resellProject(
         uint256 _ownedProjectId,
         uint256 _quantity,
         uint256 _newValuePerCarbon,
-        string memory _newExternalId,
-        string memory _ownerName
+        string memory _newExternalId
+        // ,
+        // string memory _ownerName
     ) external {
         require(
-            _ownsProject(_ownedProjectId, msg.sender) && projects[_ownedProjectId].status == ProjectStatus.Owned,
+            _ownsProject(_ownedProjectId, msg.sender) && projects[_ownedProjectId].status == 1,
             "Not owner of this owned project"
         );
         require(_quantity > 0 && _quantity <= projects[_ownedProjectId].quantity, "Invalid quantity");
@@ -170,7 +139,7 @@ contract CarbonMarketplace {
             ownedProject.documentCID,
             _newValuePerCarbon,
             _quantity,
-            _ownerName,
+            // _ownerName,
             msg.sender,
             ownedProject.createdAt,
             true
@@ -185,12 +154,12 @@ contract CarbonMarketplace {
             delete projects[_ownedProjectId];
         }
 
-        emit ProjectResold(_ownedProjectId, newForSaleProjectId, _newExternalId, msg.sender, _newValuePerCarbon, _quantity);
+
     }
 
     function retireProject(uint256 _ownedProjectId, uint256 _quantity) external {
         require(
-            _ownsProject(_ownedProjectId, msg.sender) && projects[_ownedProjectId].status == ProjectStatus.Owned,
+            _ownsProject(_ownedProjectId, msg.sender) && projects[_ownedProjectId].status ==1,
             "Not owner of this owned project"
         );
         require(_quantity > 0 && _quantity <= projects[_ownedProjectId].quantity, "Insufficient or invalid quantity");
@@ -206,16 +175,15 @@ contract CarbonMarketplace {
             delete projects[_ownedProjectId];
         }
 
-        emit ProjectRetired(_ownedProjectId, newRetiredProjectId, msg.sender, _quantity);
+
     }
 
     function addRetirementCertificate(uint256 _retiredProjectId, string memory _certificateCID) external {
         Project storage retiredProject = projects[_retiredProjectId];
-        require(retiredProject.status == ProjectStatus.Retired, "Project is not retired");
+        require(retiredProject.status == 2, "Project is not retired");
         require(retiredProject.ownerAddress == msg.sender, "You are not the owner");
         require(bytes(retiredProject.certificateCID).length == 0, "Certificate already added");
         retiredProject.certificateCID = _certificateCID;
-        emit CertificateAdded(_retiredProjectId, _certificateCID);
     }
 
     // --- View Functions ---
@@ -225,7 +193,7 @@ contract CarbonMarketplace {
     function getRetiredProjects(address _owner) external view returns (Project[] memory) { return _getProjectsArray(retiredProjects[_owner]); }
 
     // --- Internal Helper Functions ---
-    function _createProject(Project memory _newProjectData) internal returns (uint256 newProjectId) {
+    function _createProject(Project memory _newProjectData) internal returns (uint32 newProjectId) {
         newProjectId = nextProjectId++;
         _newProjectData.projectId = newProjectId;
         projects[newProjectId] = _newProjectData;
@@ -240,11 +208,11 @@ contract CarbonMarketplace {
             certificateCID: "",
             valuePerCarbon: 0,
             quantity: _quantity,
-            ownerName: "",
+            // ownerName: "",
             ownerAddress: _buyer,
             createdAt: _originalProject.createdAt,
             isResold: _originalProject.isResold,
-            status: ProjectStatus.Owned,
+            status: 1,
             marketplaceIndex: 0
         });
         newProjectId = _createProject(data);
@@ -260,11 +228,11 @@ contract CarbonMarketplace {
             certificateCID: "",
             valuePerCarbon: 0,
             quantity: _quantity,
-            ownerName: _originalProject.ownerName,
+            // ownerName: _originalProject.ownerName,
             ownerAddress: _owner,
             createdAt: _originalProject.createdAt,
             isResold: _originalProject.isResold,
-            status: ProjectStatus.Retired,
+            status: 2,
             marketplaceIndex: 0
         });
         newProjectId = _createProject(data);
@@ -276,7 +244,7 @@ contract CarbonMarketplace {
         string memory _documentCID,
         uint256 _valuePerCarbon,
         uint256 _quantity,
-        string memory _ownerName,
+        // string memory _ownerName,
         address _owner,
         uint256 _createdAt,
         bool _isResold
@@ -289,11 +257,11 @@ contract CarbonMarketplace {
             certificateCID: "",
             valuePerCarbon: _valuePerCarbon,
             quantity: _quantity,
-            ownerName: _ownerName,
+            // ownerName: _ownerName,
             ownerAddress: _owner,
             createdAt: _createdAt,
             isResold: _isResold,
-            status: ProjectStatus.ForSale,
+            status: 0,
             marketplaceIndex: 0
         });
         newProjectId = _createProject(data);

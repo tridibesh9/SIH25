@@ -5,7 +5,7 @@ async function testContract() {
         console.log('🔗 Testing contract deployment...');
         
         // Get the deployed contract address
-        const contractAddress = "0x5FbDB2315678afecb367f032d93F642f64180aa3";
+        const contractAddress = "0xbF43C988e4F14B57F3208D31778Fb58e271e8FCB";
         
         // Get a signer
         const [signer] = await ethers.getSigners();
