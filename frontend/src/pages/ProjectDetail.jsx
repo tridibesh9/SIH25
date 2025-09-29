@@ -11,7 +11,7 @@ export const ProjectDetail = ({ contract }) => {
     const { projectOnChain, projectMetadata } = location.state || {};
     
     const [quantity, setQuantity] = useState(1);
-    const [ethToInrRate, setEthToInrRate] = useState(280000);
+    const [ethToInrRate, setEthToInrRate] = useState(400000);
     const [activeImage, setActiveImage] = useState(null);
     const [isPurchasing, setIsPurchasing] = useState(false); // State for loading during purchase
 
