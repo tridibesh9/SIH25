@@ -14,6 +14,7 @@ import { Certificate } from './pages/Certificate.jsx';
 // import { RegisterProject } from './pages/RegisterProject.jsx';
 import RegisterProjectWithTerritory from './pages/RegisterProjectWithTerritory.jsx';
 import { ProjectOwnerDashboard } from './pages/ProjectOwner/ProjectOwnerDashboard.jsx';
+import DroneImageUpload from './pages/DroneImageUpload.jsx';
 
 import CarbonMarketPlaceArtifact from './artifacts/contracts/CarbonCycle.sol/CarbonMarketplace.json';
 
@@ -151,6 +152,14 @@ function App() {
                         element={
                             <ProtectedRoute>
                                 <AdminDashboard />
+                            </ProtectedRoute>
+                        }
+                    />
+                    <Route
+                        path="/admin/drone-upload"
+                        element={
+                            <ProtectedRoute>
+                                <DroneImageUpload />
                             </ProtectedRoute>
                         }
                     />

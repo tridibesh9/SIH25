@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useCallback } from 'react';
-import { Eye, CheckCircle, XCircle, Shield, Users, Bot, RotateCcw, ThumbsDown, ThumbsUp, ExternalLink, ChevronLeft, ChevronRight } from 'lucide-react';
+import { Eye, CheckCircle, XCircle, Shield, Users, Bot, RotateCcw, ThumbsDown, ThumbsUp, ExternalLink, ChevronLeft, ChevronRight, FileText, Camera, Upload, Download, Calendar, MapPin, Clock, ImageIcon } from 'lucide-react';
+import { useNavigate } from 'react-router-dom';
 import apiService from './adminApiServices';
 import StatCard from './Components/StatCard';
 import MonitoringPanel from './Components/MonitoringPanel';
@@ -156,6 +157,114 @@ const SubTabButton = ({ label, value, active, setActive, count }) => (
     </button>
 );
 
+// Reporting Panel Component
+const ReportingPanel = ({ droneReports, ngoReports, activeReportTab, setActiveReportTab }) => {
+    const navigate = useNavigate();
+    
+    return (
+        <div className="bg-white rounded-lg shadow-lg border border-gray-200 p-6 mb-8">
+            <div className="flex items-center justify-between mb-6">
+                <h2 className="text-2xl font-bold text-gray-800 flex items-center">
+                    <FileText className="w-6 h-6 mr-2 text-blue-600" />
+                    Reports Dashboard
+                </h2>
+                <button 
+                    onClick={() => navigate('/admin/drone-upload')}
+                    className="bg-blue-600 text-white px-4 py-2 rounded-lg text-sm font-medium hover:bg-blue-700 transition-colors flex items-center"
+                >
+                    <Camera className="w-4 h-4 mr-2" />
+                    Upload Drone Images
+                </button>
+            </div>
+            
+            <div className="flex space-x-4 mb-6">
+                <button 
+                    onClick={() => setActiveReportTab('drone')}
+                    className={`px-6 py-3 rounded-lg font-medium transition-colors ${
+                        activeReportTab === 'drone' 
+                        ? 'bg-blue-600 text-white shadow-md' 
+                        : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+                    }`}
+                >
+                    <Bot className="w-4 h-4 inline mr-2" />
+                    Drone Reports ({droneReports.length})
+                </button>
+                <button 
+                    onClick={() => setActiveReportTab('ngo')}
+                    className={`px-6 py-3 rounded-lg font-medium transition-colors ${
+                        activeReportTab === 'ngo' 
+                        ? 'bg-blue-600 text-white shadow-md' 
+                        : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+                    }`}
+                >
+                    <Users className="w-4 h-4 inline mr-2" />
+                    NGO Reports ({ngoReports.length})
+                </button>
+            </div>
+            
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                {activeReportTab === 'drone' ? (
+                    droneReports.length > 0 ? droneReports.map((report, index) => (
+                        <div key={index} className="bg-gray-50 rounded-lg p-4 border border-gray-200">
+                            <div className="flex items-center justify-between mb-2">
+                                <h3 className="font-semibold text-gray-800">{report.projectName || `Project #${report.projectId}`}</h3>
+                                <span className="text-xs text-gray-500">{report.date}</span>
+                            </div>
+                            <p className="text-sm text-gray-600 mb-2">{report.location}</p>
+                            <div className="flex items-center text-sm text-blue-600 mb-2">
+                                <Bot className="w-4 h-4 mr-1" />
+                                {report.droneName || 'Drone Survey'}
+                            </div>
+                            {report.images && report.images.length > 0 && (
+                                <div className="flex items-center text-sm text-green-600 mb-2">
+                                    <ImageIcon className="w-4 h-4 mr-1" />
+                                    {report.images.length} Images
+                                </div>
+                            )}
+                            <p className="text-xs text-gray-500">{report.description || 'Survey completed successfully'}</p>
+                            {report.surveyData && (
+                                <button className="mt-2 text-xs bg-blue-100 text-blue-700 px-2 py-1 rounded hover:bg-blue-200">
+                                    View Survey Data
+                                </button>
+                            )}
+                        </div>
+                    )) : (
+                        <div className="col-span-full text-center py-8 text-gray-500">
+                            <Bot className="w-12 h-12 mx-auto mb-2 text-gray-300" />
+                            <p>No drone reports available</p>
+                        </div>
+                    )
+                ) : (
+                    ngoReports.length > 0 ? ngoReports.map((report, index) => (
+                        <div key={index} className="bg-gray-50 rounded-lg p-4 border border-gray-200">
+                            <div className="flex items-center justify-between mb-2">
+                                <h3 className="font-semibold text-gray-800">{report.projectName || `Project #${report.projectId}`}</h3>
+                                <span className="text-xs text-gray-500">{report.date}</span>
+                            </div>
+                            <p className="text-sm text-gray-600 mb-2">{report.location}</p>
+                            <div className="flex items-center text-sm text-green-600 mb-2">
+                                <Users className="w-4 h-4 mr-1" />
+                                {report.ngoName || 'NGO Verification'}
+                            </div>
+                            <p className="text-xs text-gray-500">{report.description || 'Site verification completed'}</p>
+                            {report.verificationData && (
+                                <button className="mt-2 text-xs bg-green-100 text-green-700 px-2 py-1 rounded hover:bg-green-200">
+                                    View Verification Data
+                                </button>
+                            )}
+                        </div>
+                    )) : (
+                        <div className="col-span-full text-center py-8 text-gray-500">
+                            <Users className="w-12 h-12 mx-auto mb-2 text-gray-300" />
+                            <p>No NGO reports available</p>
+                        </div>
+                    )
+                )}
+            </div>
+        </div>
+    );
+};
+
 export const AdminDashboard = () => {
     const [projects, setProjects] = useState({
         pending: [], landApproval: [], ngoAssigned: [],
@@ -171,6 +280,9 @@ export const AdminDashboard = () => {
     const [overview, setOverview] = useState({});
     const [availableNgos, setAvailableNgos] = useState([]);
     const [availableDrones, setAvailableDrones] = useState([]);
+    const [activeReportTab, setActiveReportTab] = useState('drone');
+    const [droneReports, setDroneReports] = useState([]);
+    const [ngoReports, setNgoReports] = useState([]);
 
     const fetchAllData = useCallback(async () => {
         setLoading(true);
@@ -207,6 +319,9 @@ export const AdminDashboard = () => {
                 approved: accepted || [],
                 rejected: rejected || [],
             });
+
+            // Fetch reports data
+            await fetchReports();
         } catch (error) {
             console.error('Error fetching dashboard data:', error);
             alert('Failed to load dashboard data. Please refresh the page.');
@@ -214,6 +329,61 @@ export const AdminDashboard = () => {
             setLoading(false);
         }
     }, []);
+
+    const fetchReports = async () => {
+        try {
+            // These would be actual API calls to fetch reports
+            // For now, using mock data
+            const mockDroneReports = [
+                {
+                    projectId: '1',
+                    projectName: 'Forest Restoration Project',
+                    location: 'Mumbai, Maharashtra',
+                    droneName: 'DJI Mavic Pro',
+                    date: '2025-09-25',
+                    description: 'Aerial survey completed successfully',
+                    images: ['img1.jpg', 'img2.jpg', 'img3.jpg'],
+                    surveyData: { area: '50 hectares', trees: '2500+' }
+                },
+                {
+                    projectId: '2',
+                    projectName: 'Solar Farm Installation',
+                    location: 'Rajasthan',
+                    droneName: 'DJI Phantom 4',
+                    date: '2025-09-20',
+                    description: 'Site mapping and analysis complete',
+                    images: ['img4.jpg', 'img5.jpg'],
+                    surveyData: { area: '100 hectares', potential: 'High' }
+                }
+            ];
+
+            const mockNgoReports = [
+                {
+                    projectId: '1',
+                    projectName: 'Forest Restoration Project',
+                    location: 'Mumbai, Maharashtra',
+                    ngoName: 'Green Earth Foundation',
+                    date: '2025-09-22',
+                    description: 'Site verification completed, land suitable for restoration',
+                    verificationData: { landQuality: 'Good', accessibility: 'Moderate' }
+                },
+                {
+                    projectId: '3',
+                    projectName: 'Wind Energy Project',
+                    location: 'Gujarat',
+                    ngoName: 'Environmental Watch',
+                    date: '2025-09-18',
+                    description: 'Environmental impact assessment completed',
+                    verificationData: { impact: 'Minimal', approval: 'Recommended' }
+                }
+            ];
+
+            setDroneReports(mockDroneReports);
+            setNgoReports(mockNgoReports);
+        } catch (error) {
+            console.error('Error fetching reports:', error);
+        }
+    };
 
     useEffect(() => {
         fetchAllData();
@@ -294,6 +464,14 @@ export const AdminDashboard = () => {
                     overview={overview}
                     onProjectClick={setSelectedProjectForDetails}
                     loading={loading}
+                />
+
+                {/* Reporting Panel */}
+                <ReportingPanel 
+                    droneReports={droneReports}
+                    ngoReports={ngoReports}
+                    activeReportTab={activeReportTab}
+                    setActiveReportTab={setActiveReportTab}
                 />
                 
                 <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-5 mb-8">
