@@ -56,14 +56,14 @@ userSchema.statics.register = async function (name, email, password, role) {
     // Test individual regex components
     const hasLetter = /(?=.*[A-Za-z])/.test(password);
     const hasNumber = /(?=.*\d)/.test(password);
-    const hasSpecialChar = /(?=.*[!@#$%^&*])/.test(password);
-    const onlyAllowedChars = /^[A-Za-z\d!@#$%^&*]{8,}$/.test(password);
-    const fullRegex = /^(?=.*[A-Za-z])(?=.*\d)(?=.*[!@#$%^&*])[A-Za-z\d!@#$%^&*]{8,}$/.test(password);
+    const hasSpecialChar = /(?=.*[!@#$%^&*+=\-_])/.test(password);
+    const onlyAllowedChars = /^[A-Za-z\d!@#$%^&*+=\-_]{8,}$/.test(password);
+    const fullRegex = /^(?=.*[A-Za-z])(?=.*\d)(?=.*[!@#$%^&*+=\-_])[A-Za-z\d!@#$%^&*+=\-_]{8,}$/.test(password);
     
     console.log('🔐 [USER MODEL] Password validation breakdown:');
     console.log('  - Has letter:', hasLetter);
     console.log('  - Has number:', hasNumber);
-    console.log('  - Has special char [!@#$%^&*]:', hasSpecialChar);
+    console.log('  - Has special char [!@#$%^&*+=\-_]:', hasSpecialChar);
     console.log('  - Only allowed chars:', onlyAllowedChars);
     console.log('  - Full regex passes:', fullRegex);
     
