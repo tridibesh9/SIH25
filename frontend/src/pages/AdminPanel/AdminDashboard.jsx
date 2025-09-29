@@ -2,6 +2,7 @@ import React, { useState, useEffect, useCallback } from 'react';
 import { Eye, CheckCircle, XCircle, Shield, Users, Bot, RotateCcw, ThumbsDown, ThumbsUp, ExternalLink, ChevronLeft, ChevronRight } from 'lucide-react';
 import apiService from './adminApiServices';
 import StatCard from './Components/StatCard';
+import MonitoringPanel from './Components/MonitoringPanel';
 
 // --- Helper Components ---
 
@@ -264,6 +265,20 @@ export const AdminDashboard = () => {
         if (!reason) return alert('A reason for the redo request is required');
         handleAction(apiService.changeStatus, `Project sent back to ${newStatus}`, projectId, newStatus, reason);
     };
+
+    // Get all projects for monitoring panel
+    const getAllProjects = () => {
+        return [
+            ...projects.pending,
+            ...projects.landApproval,
+            ...projects.ngoAssigned,
+            ...projects.droneAssigning,
+            ...projects.droneAssigned,
+            ...projects.adminApproval,
+            ...projects.approved,
+            ...projects.rejected,
+        ];
+    };
     
     return (
         <div className="min-h-screen pt-16 bg-gray-50">
@@ -272,6 +287,14 @@ export const AdminDashboard = () => {
                     <h1 className="text-4xl font-extrabold text-gray-800 tracking-tight">Admin Verification Dashboard</h1>
                     <p className="text-lg text-gray-600 mt-2">Review, approve, and manage carbon credit projects.</p>
                 </div>
+
+                {/* Monitoring Panel */}
+                <MonitoringPanel 
+                    projects={getAllProjects()}
+                    overview={overview}
+                    onProjectClick={setSelectedProjectForDetails}
+                    loading={loading}
+                />
                 
                 <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-5 mb-8">
                     <StatCard title="Pending Land" value={overview.pending || 0} icon={<Shield size={24} className="text-purple-500"/>} colorClass="border-purple-500 bg-purple-50" />

@@ -39,6 +39,13 @@ const apiService = {
         const data = await response.json();
         return data.drones ? data.drones.map(drone => ({ ...drone, _id: String(drone._id) })) : [];
     },
+
+    async fetchAllProjects() {
+        const response = await fetch(`${API_BASE_URL}/admin/projects/all`, { headers: apiService.getHeaders() });
+        if (!response.ok) throw new Error('Failed to fetch all projects');
+        const data = await response.json();
+        return data.success ? data.data : [];
+    },
     
     async movePendingToLandApproval(projectId, message) {
         const response = await fetch(`${API_BASE_URL}/admin/pending-to-land-approval`, {
