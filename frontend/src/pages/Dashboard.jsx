@@ -13,7 +13,7 @@ export const Dashboard = ({ contract, account }) => {
     const [stats, setStats] = useState({ totalInvestment: 0, totalCO2Offset: 0 });
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
-    const [ethToInrRate, setEthToInrRate] = useState(280000); // Placeholder rate
+    const [ethToInrRate, setEthToInrRate] = useState(400000); // Placeholder rate
 
     useEffect(() => {
         const fetchProjects = async () => {

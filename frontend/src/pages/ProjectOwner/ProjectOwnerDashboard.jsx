@@ -201,7 +201,7 @@ export const ProjectOwnerDashboard = ({ contract, account }) => {
                                         <div key={project.projectId} onClick={() => setSelectedProject(project)} className="bg-gray-50 rounded-xl p-6 hover:shadow-lg hover:bg-white transition-all cursor-pointer border border-transparent hover:border-blue-400">
                                             <img src={project.projectImages[0]} alt={project.projectName} className="w-full h-40 object-cover rounded-lg mb-4"/>
                                             <h3 className="font-semibold text-lg text-gray-800">{project.projectName}</h3>
-                                            <p className="text-sm text-gray-600 mb-4">{project.location}</p>
+                                            {/* <p className="text-sm text-gray-600 mb-4">{project.location}</p> */}
                                             <div className="text-xs font-medium text-blue-600 bg-blue-100 px-3 py-1 rounded-full inline-block capitalize">{project.verificationStatus.replace(' approval pending', '...')}</div>
                                         </div>
                                     ))}

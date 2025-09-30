@@ -116,7 +116,7 @@ export const ActiveCreditCard = ({ project, contract, ethToInrRate, account }) =
                     />
                     <div className="space-y-1">
                         <h3 className="font-bold text-xl text-gray-800">{metadata.projectName}</h3>
-                        <p className="text-sm text-gray-500">{metadata.location}</p>
+                        {/* <p className="text-sm text-gray-500">{metadata.location}</p> */}
                         <p className="text-sm pt-1">
                             <span className="font-semibold text-green-600 bg-green-50 px-3 py-1 rounded-full">
                                 {maxQuantity.toLocaleString()} Credits Available
