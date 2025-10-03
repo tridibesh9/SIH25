@@ -86,12 +86,28 @@ export const registerProject = async (req, res) => {
             return res.status(400).json({ message: "Please provide all required fields." });
         }
 
+        // Validate location field - it can be either a string description or GeoJSON
+        let locationData = location;
+        if (typeof location === 'string') {
+            try {
+                // Try to parse as JSON (GeoJSON case)
+                const parsedLocation = JSON.parse(location);
+                if (parsedLocation.type === 'Feature' && parsedLocation.geometry) {
+                    // Valid GeoJSON, keep it as string in database
+                    locationData = location;
+                }
+            } catch (e) {
+                // Not JSON, treat as regular string description
+                locationData = location;
+            }
+        }
+
         // Create new project instance
         const newProject = new Project({
             projectName,
             owner,
             email,
-            location,
+            location: locationData,
             contactNumber,
             type,
             siteDescription,

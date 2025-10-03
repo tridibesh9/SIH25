@@ -105,10 +105,7 @@ export const ProjectOwnerDashboard = ({ contract, account }) => {
         setIsEnlisting(project.projectId);
         setError(null);
         try {
-            const priceApiResponse = await fetch('https://api.coingecko.com/api/v3/simple/price?ids=ethereum&vs_currencies=inr');
-            if (!priceApiResponse.ok) throw new Error("Could not fetch the live ETH-INR exchange rate.");
-            const priceApiData = await priceApiResponse.json();
-            const ethToInrRate = priceApiData.ethereum.inr;
+            const ethToInrRate = 400000;
             const priceInEth = parseFloat(priceInInr) / ethToInrRate;
             
             const metadataResponse = await fetch(`${backend_url}/projects/upload-metadata`, {

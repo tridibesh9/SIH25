@@ -50,7 +50,7 @@ export const RetiredCreditCard = ({ project, contract }) => {
                 retiredAt: new Date(Number(project.createdAt) * 1000).toISOString(),
             };
 
-            console.log("Sending data to backend to generate certificate...", dataToSend);
+            // console.log("Sending data to backend to generate certificate...", dataToSend);
             const backendResponse = await fetch(`${backend_url}/projects/retireproject`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
@@ -71,7 +71,7 @@ export const RetiredCreditCard = ({ project, contract }) => {
                 throw new Error("Smart contract is not connected. Cannot store certificate CID.");
             }
             
-            console.log(`Calling addRetirementCertificate for project ${project.projectId} with CID ${newCertificateCID}`);
+            // console.log(`Calling addRetirementCertificate for project ${project.projectId} with CID ${newCertificateCID}`);
             const tx = await contract.addRetirementCertificate(project.projectId, newCertificateCID);
             await tx.wait(); // Wait for the transaction to be confirmed
 
@@ -105,7 +105,7 @@ export const RetiredCreditCard = ({ project, contract }) => {
                 {/* Project Info */}
                 <div>
                     <h3 className="font-semibold text-gray-800">{metadata.projectName}</h3>
-                    <p className="text-sm text-gray-600 mt-1">{metadata.location}</p>
+                    {/* <p className="text-sm text-gray-600 mt-1">{metadata.location}</p> */}
                 </div>
 
                 {/* Retired Amount */}

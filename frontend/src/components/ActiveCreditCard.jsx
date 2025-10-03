@@ -10,10 +10,11 @@ export const ActiveCreditCard = ({ project, contract, ethToInrRate, account }) =
     // State for user inputs
     const [quantity, setQuantity] = useState(1);
     const [resalePriceInr, setResalePriceInr] = useState('');
-    const [resaleOwnerName, setResaleOwnerName] = useState('');
+    // const [resaleOwnerName, setResaleOwnerName] = useState('');
 
     const maxQuantity = Number(project.quantity);
 
+    
     useEffect(() => {
         const fetchMetadata = async () => {
             if (!project.documentCID) {
@@ -42,7 +43,7 @@ export const ActiveCreditCard = ({ project, contract, ethToInrRate, account }) =
             return;
         }
         try {
-            console.log(`Retiring ${quantity} credits from project ID: ${Number(project.projectId)}`);
+            // console.log(`Retiring ${quantity} credits from project ID: ${Number(project.projectId)}`);
             
             const tx = await contract.retireProject(project.projectId, quantity);
             const receipt = await tx.wait(); // Wait for the transaction to be mined
@@ -56,13 +57,14 @@ export const ActiveCreditCard = ({ project, contract, ethToInrRate, account }) =
     };
 
     const handleResell = async () => {
-        if (!contract || quantity <= 0 || !resalePriceInr || parseFloat(resalePriceInr) <= 0 || !resaleOwnerName.trim()) {
-            alert("Please enter a valid quantity, a positive resale price, and an owner name.");
+        if (!contract || quantity <= 0 || !resalePriceInr || parseFloat(resalePriceInr) <= 0 ) {
+            alert("Please enter a valid quantity, a positive resale price");
             return;
         }
         try {
             const priceInEth = parseFloat(resalePriceInr) / ethToInrRate;
-            const priceInWei = ethers.parseEther(priceInEth.toString());
+            const formattedPriceInEth = priceInEth.toFixed(18);
+            const priceInWei = ethers.parseEther(formattedPriceInEth);
             const newExternalId = crypto.randomUUID();
 
             const tx = await contract.resellProject(
@@ -70,7 +72,7 @@ export const ActiveCreditCard = ({ project, contract, ethToInrRate, account }) =
                 quantity,
                 priceInWei,
                 newExternalId,
-                resaleOwnerName
+                // resaleOwnerName
             );
             
             await tx.wait();
@@ -116,7 +118,7 @@ export const ActiveCreditCard = ({ project, contract, ethToInrRate, account }) =
                     />
                     <div className="space-y-1">
                         <h3 className="font-bold text-xl text-gray-800">{metadata.projectName}</h3>
-                        <p className="text-sm text-gray-500">{metadata.location}</p>
+                        {/* <p className="text-sm text-gray-500">{metadata.location}</p> */}
                         <p className="text-sm pt-1">
                             <span className="font-semibold text-green-600 bg-green-50 px-3 py-1 rounded-full">
                                 {maxQuantity.toLocaleString()} Credits Available
@@ -142,7 +144,7 @@ export const ActiveCreditCard = ({ project, contract, ethToInrRate, account }) =
                         />
                     </div>
                     
-                    {/* Your Name */}
+                    {/* Your Name
                     <div className="space-y-1">
                         <label htmlFor={`ownerName-${project.projectId}`} className="text-xs font-semibold text-gray-600 block">
                             YOUR NAME
@@ -155,7 +157,7 @@ export const ActiveCreditCard = ({ project, contract, ethToInrRate, account }) =
                             onChange={(e) => setResaleOwnerName(e.target.value)}
                             className="w-full h-12 px-3 text-base border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 transition-all"
                         />
-                    </div>
+                    </div> */}
 
                     {/* Price */}
                     <div className="space-y-1">

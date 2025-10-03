@@ -116,7 +116,7 @@ export const Marketplace = ({ contract, account }) => {
     const [viewMode, setViewMode] = useState('grid');
     const [projects, setProjects] = useState([]);
     const [loading, setLoading] = useState(true);
-    const [ethToInrRate, setEthToInrRate] = useState(280000);
+    const [ethToInrRate, setEthToInrRate] = useState(400000);
 
     const projectTypes = [
         { id: 'wetlands', label: 'Wetlands', icon: Droplets },

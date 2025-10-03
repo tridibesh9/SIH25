@@ -11,8 +11,10 @@ import { Dashboard } from './pages/Dashboard.jsx';
 import { Auth } from './pages/AuthPages/Auth.jsx';
 import { AdminDashboard } from './pages/AdminPanel/AdminDashboard.jsx';
 import { Certificate } from './pages/Certificate.jsx';
-import { RegisterProject } from './pages/RegisterProject.jsx';
+// import { RegisterProject } from './pages/RegisterProject.jsx';
+import RegisterProjectWithTerritory from './pages/RegisterProjectWithTerritory.jsx';
 import { ProjectOwnerDashboard } from './pages/ProjectOwner/ProjectOwnerDashboard.jsx';
+import DroneImageUpload from './pages/DroneImageUpload.jsx';
 
 import CarbonMarketPlaceArtifact from './artifacts/contracts/CarbonCycle.sol/CarbonMarketplace.json';
 
@@ -89,17 +91,17 @@ function App() {
 
     const setupBlockchain = async () => {
         // Your contract address might be different
-        const contractAddress = "0xbF43C988e4F14B57F3208D31778Fb58e271e8FCB";
+        const contractAddress = "0x291b0CD15bbE3EDF16f550f40115AF30e29e35e1";
         const contractABI = CarbonMarketPlaceArtifact;
 
         try {
-            console.log('🔗 [BLOCKCHAIN] Starting blockchain setup...');
-            console.log('🔗 [BLOCKCHAIN] Contract address:', contractAddress);
+            // console.log('🔗 [BLOCKCHAIN] Starting blockchain setup...');
+            // console.log('🔗 [BLOCKCHAIN] Contract address:', contractAddress);
             
             if (window.ethereum) {
                 const provider = new ethers.BrowserProvider(window.ethereum);
                 setProvider(provider);
-                console.log('🔗 [BLOCKCHAIN] Provider created');
+                // console.log('🔗 [BLOCKCHAIN] Provider created');
                 
 
                 // Check network
@@ -109,10 +111,10 @@ function App() {
                     await switchOrAddNetwork();
                     return;
                 }
-                console.log('🔗 [BLOCKCHAIN] Connected to network:', {
-                    name: network.name,
-                    chainId: network.chainId.toString()
-                });
+                // console.log('🔗 [BLOCKCHAIN] Connected to network:', {
+                //     name: network.name,
+                //     chainId: network.chainId.toString()
+                // });
 
                 // Request account access if not already connected
                 await window.ethereum.request({ method: 'eth_requestAccounts' });
@@ -120,23 +122,23 @@ function App() {
                 const signer = await provider.getSigner();
                 const selectedAccount = await signer.getAddress();
                 setAccount(selectedAccount);
-                console.log("🔗 [BLOCKCHAIN] Account connected:", selectedAccount);
+                // console.log("🔗 [BLOCKCHAIN] Account connected:", selectedAccount);
 
-                console.log(" Contract ABI:\n\n\n", contractABI);
+                // console.log(" Contract ABI:\n\n\n", contractABI);
 
                 const contractInstance = new ethers.Contract(contractAddress, contractABI, signer);
-                console.log("contract ins:",contractInstance)
+                // console.log("contract ins:",contractInstance)
                 setContract(contractInstance);
                 // console.log("🔗 [BLOCKCHAIN] Contract instance created");
                 
-                // Test contract connection
-                try {
-                    const nextProjectId = await contractInstance.nextProjectId();
-                    console.log("🔗 [BLOCKCHAIN] Contract test successful - nextProjectId:", nextProjectId.toString());
-                } catch (testError) {
-                    console.error("🔗 [BLOCKCHAIN] Contract test failed:", testError);
-                    console.error("🔗 [BLOCKCHAIN] Make sure Hardhat node is running on localhost:8545");
-                }
+                // // Test contract connection
+                // try {
+                //     const nextProjectId = await contractInstance.nextProjectId();
+                //     console.log("🔗 [BLOCKCHAIN] Contract test successful - nextProjectId:", nextProjectId.toString());
+                // } catch (testError) {
+                //     console.error("🔗 [BLOCKCHAIN] Contract test failed:", testError);
+                //     console.error("🔗 [BLOCKCHAIN] Make sure Hardhat node is running on localhost:8545");
+                // }
                 
             } else {
                 alert("MetaMask is not installed. Please install it to use this app.");
@@ -159,7 +161,7 @@ function App() {
                 
                 // If accounts are found and a token exists, re-establish the connection
                 if (accounts.length > 0 && localStorage.getItem('token')) {
-                    console.log("User already connected. Re-establishing connection...");
+                    // console.log("User already connected. Re-establishing connection...");
                     setupBlockchain();
                 }
             }
@@ -206,8 +208,16 @@ function App() {
                         }
                     />
                     <Route
+                        path="/admin/drone-upload"
+                        element={
+                            <ProtectedRoute>
+                                <DroneImageUpload />
+                            </ProtectedRoute>
+                        }
+                    />
+                    <Route
                         path="/owner/register"
-                        element={<RegisterProject />}
+                        element={<RegisterProjectWithTerritory />}
                     />
                     <Route
                         path="/owner/dashboard"
