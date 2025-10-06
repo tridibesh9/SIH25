@@ -4,12 +4,14 @@ import dotenv from 'dotenv'; // import dotenv to load environment variables
 dotenv.config(); // load environment variables from .env file
 import { connectToDatabase } from './db.js';
 
+
 import userRoute from './Routes/userRoutes.js';
 import projectRoute from './Routes/projectRoutes.js';
 import droneRoute from './Routes/droneRoutes.js';
 import ngoRoute from './Routes/ngoRoutes.js';
 import appointmentRoute from './Routes/appointmentRoutes.js';
 import adminPanelRoute from './Routes/adminpanelRoutes.js';
+import volunteerRoute from './Routes/volunteerRoutes.js';
 
 
 const app = express();
@@ -60,6 +62,7 @@ app.use('/drones', droneRoute); // use the drone route for drone management
 app.use('/ngos', ngoRoute); // use the ngo route for ngo management
 app.use('/appointments', appointmentRoute); // use the appointment route for appointment management
 app.use('/admin', adminPanelRoute);
+app.use('/volunteers', volunteerRoute); // volunteer CRUD and NGO assignment
 
 // Error handling middleware
 app.use((err, req, res, next) => {
