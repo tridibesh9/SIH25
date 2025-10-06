@@ -11,18 +11,14 @@ import { Dashboard } from './pages/Dashboard.jsx';
 import { Auth } from './pages/AuthPages/Auth.jsx';
 import { AdminDashboard } from './pages/AdminPanel/AdminDashboard.jsx';
 import { Certificate } from './pages/Certificate.jsx';
-// import { RegisterProject } from './pages/RegisterProject.jsx';
 import RegisterProjectWithTerritory from './pages/RegisterProjectWithTerritory.jsx';
 import { ProjectOwnerDashboard } from './pages/ProjectOwner/ProjectOwnerDashboard.jsx';
 import DroneImageUpload from './pages/DroneImageUpload.jsx';
 
 import CarbonMarketPlaceArtifact from './artifacts/contracts/CarbonCycle.sol/CarbonMarketplace.json';
 
-
-
-
-const DESIRED_CHAIN_ID = '80002'; // Polygon Amoy Testnet
-const DESIRED_CHAIN_ID_HEX = '0x13882'; // Hexadecimal of 80002
+const DESIRED_CHAIN_ID = '80002';
+const DESIRED_CHAIN_ID_HEX = '0x13882';
 
 const amoyNetworkConfig = {
     chainId: DESIRED_CHAIN_ID_HEX,
@@ -32,24 +28,41 @@ const amoyNetworkConfig = {
     blockExplorerUrls: ['https://www.oklink.com/amoy'],
 };
 
-
 const ProtectedRoute = ({ children }) => {
-    const token = localStorage.getItem('token');
+    // Only access localStorage on client side
+    const [isAuthorized, setIsAuthorized] = useState(null);
 
-    if (!token) {
-        return <Navigate to="/auth" replace />;
+    useEffect(() => {
+        if (typeof window !== 'undefined') {
+            const token = localStorage.getItem('token');
+
+            if (!token) {
+                setIsAuthorized(false);
+                return;
+            }
+
+            try {
+                const decoded = jwtDecode(token);
+                const currentTime = Date.now() / 1000;
+
+                if (decoded.exp < currentTime) {
+                    localStorage.removeItem('token');
+                    setIsAuthorized(false);
+                } else {
+                    setIsAuthorized(true);
+                }
+            } catch (err) {
+                localStorage.removeItem('token');
+                setIsAuthorized(false);
+            }
+        }
+    }, []);
+
+    if (isAuthorized === null) {
+        return <div>Loading...</div>;
     }
 
-    try {
-        const decoded = jwtDecode(token);
-        const currentTime = Date.now() / 1000;
-
-        if (decoded.exp < currentTime) {
-            localStorage.removeItem('token');
-            return <Navigate to="/auth" replace />;
-        }0
-    } catch (err) {
-        localStorage.removeItem('token');
+    if (!isAuthorized) {
         return <Navigate to="/auth" replace />;
     }
 
@@ -60,9 +73,20 @@ function App() {
     const [account, setAccount] = useState('');
     const [contract, setContract] = useState(null);
     const [provider, setProvider] = useState(null);
+    const [isClient, setIsClient] = useState(false);
+
+    // Ensure we're on the client side
+    useEffect(() => {
+        setIsClient(true);
+    }, []);
 
     const switchOrAddNetwork = async () => {
-        if (!window.ethereum) return;
+        // Check if we're on client and ethereum is available
+        if (typeof window === 'undefined' || !window.ethereum) {
+            console.log('🔗 [BLOCKCHAIN] Ethereum provider not available');
+            return;
+        }
+        
         try {
             await window.ethereum.request({
                 method: 'wallet_switchEthereumChain',
@@ -76,7 +100,7 @@ function App() {
                         method: 'wallet_addEthereumChain',
                         params: [amoyNetworkConfig],
                     });
-                     window.location.reload();
+                    window.location.reload();
                 } catch (addError) {
                     console.error("Failed to add the network:", addError);
                     alert("Failed to add Polygon Amoy. Please add it manually.");
@@ -88,59 +112,55 @@ function App() {
         }
     };
 
-
     const setupBlockchain = async () => {
-        // Your contract address might be different
+        // CRITICAL: Only run on client side
+        if (typeof window === 'undefined') {
+            console.log('🔗 [BLOCKCHAIN] Skipping setup - not on client side');
+            return;
+        }
+
         const contractAddress = "0x291b0CD15bbE3EDF16f550f40115AF30e29e35e1";
         const contractABI = CarbonMarketPlaceArtifact;
 
         try {
             console.log('🔗 [BLOCKCHAIN] Starting blockchain setup...');
             console.log('🔗 [BLOCKCHAIN] Contract address:', contractAddress);
+            console.log('🔗 [BLOCKCHAIN] Window.ethereum available:', !!window.ethereum);
             
             if (window.ethereum) {
                 const provider = new ethers.BrowserProvider(window.ethereum);
                 setProvider(provider);
                 console.log('🔗 [BLOCKCHAIN] Provider created');
                 
-
                 // Check network
                 const network = await provider.getNetwork();
+                console.log('🔗 [BLOCKCHAIN] Current network:', {
+                    name: network.name,
+                    chainId: network.chainId.toString()
+                });
+
                 if (network.chainId.toString() !== DESIRED_CHAIN_ID) {
                     alert(`Wrong network. Please switch to Polygon Amoy (Chain ID: ${DESIRED_CHAIN_ID}).`);
                     await switchOrAddNetwork();
                     return;
                 }
-                console.log('🔗 [BLOCKCHAIN] Connected to network:', {
-                    name: network.name,
-                    chainId: network.chainId.toString()
-                });
 
-                // Request account access if not already connected
-                await window.ethereum.request({ method: 'eth_requestAccounts' });
+                // Request account access
+                const accounts = await window.ethereum.request({ method: 'eth_requestAccounts' });
+                console.log('🔗 [BLOCKCHAIN] Accounts received:', accounts);
 
                 const signer = await provider.getSigner();
                 const selectedAccount = await signer.getAddress();
                 setAccount(selectedAccount);
                 console.log("🔗 [BLOCKCHAIN] Account connected:", selectedAccount);
 
-                console.log(" Contract ABI:\n\n\n", contractABI);
-
+                console.log("🔗 [BLOCKCHAIN] Creating contract instance...");
                 const contractInstance = new ethers.Contract(contractAddress, contractABI, signer);
-                console.log("contract ins:",contractInstance)
                 setContract(contractInstance);
-                console.log("🔗 [BLOCKCHAIN] Contract instance created");
-                
-                // // Test contract connection
-                // try {
-                //     const nextProjectId = await contractInstance.nextProjectId();
-                //     console.log("🔗 [BLOCKCHAIN] Contract test successful - nextProjectId:", nextProjectId.toString());
-                // } catch (testError) {
-                //     console.error("🔗 [BLOCKCHAIN] Contract test failed:", testError);
-                //     console.error("🔗 [BLOCKCHAIN] Make sure Hardhat node is running on localhost:8545");
-                // }
+                console.log("🔗 [BLOCKCHAIN] Contract instance created successfully");
                 
             } else {
+                console.log("🔗 [BLOCKCHAIN] MetaMask not detected");
                 alert("MetaMask is not installed. Please install it to use this app.");
             }
         } catch (error) {
@@ -154,27 +174,56 @@ function App() {
     };
 
     useEffect(() => {
+        // Only run on client side
+        if (typeof window === 'undefined' || !isClient) {
+            return;
+        }
+
         const checkConnection = async () => {
+            console.log('🔗 [BLOCKCHAIN] Checking existing connection...');
+            
             if (window.ethereum) {
-                // Check if the user is already connected
-                const accounts = await window.ethereum.request({ method: 'eth_accounts' });
-                
-                // If accounts are found and a token exists, re-establish the connection
-                if (accounts.length > 0 && localStorage.getItem('token')) {
-                    // console.log("User already connected. Re-establishing connection...");
-                    setupBlockchain();
+                try {
+                    const accounts = await window.ethereum.request({ method: 'eth_accounts' });
+                    console.log('🔗 [BLOCKCHAIN] Existing accounts:', accounts);
+                    
+                    if (accounts.length > 0 && localStorage.getItem('token')) {
+                        console.log("🔗 [BLOCKCHAIN] User already connected. Re-establishing...");
+                        await setupBlockchain();
+                    } else {
+                        console.log("🔗 [BLOCKCHAIN] No existing connection found");
+                    }
+                } catch (err) {
+                    console.error('🔗 [BLOCKCHAIN] Error checking connection:', err);
                 }
+            } else {
+                console.log('🔗 [BLOCKCHAIN] Ethereum provider not found');
             }
         };
 
         checkConnection();
 
-        // Reload the page if the account changes in MetaMask
-        window.ethereum.on('accountsChanged', () => {
-            window.location.reload();
-        });
+        // Account change listener
+        if (window.ethereum) {
+            const handleAccountsChanged = (accounts) => {
+                console.log('🔗 [BLOCKCHAIN] Accounts changed:', accounts);
+                window.location.reload();
+            };
 
-    }, []);
+            window.ethereum.on('accountsChanged', handleAccountsChanged);
+
+            return () => {
+                if (window.ethereum.removeListener) {
+                    window.ethereum.removeListener('accountsChanged', handleAccountsChanged);
+                }
+            };
+        }
+    }, [isClient]);
+
+    // Don't render until client-side hydration
+    if (!isClient) {
+        return <div>Loading...</div>;
+    }
 
     return (
         <Router>
