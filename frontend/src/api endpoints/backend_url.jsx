@@ -1,1 +1,1 @@
-export const backend_url = "http://localhost:3030";
+export const backend_url = "https://sih25-n7h6.onrender.com";
