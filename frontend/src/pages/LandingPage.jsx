@@ -135,7 +135,7 @@ export const LandingPage = ({ contract }) => {
     };
 
     useEffect(() => {
-        const fetchFeaturedProjects = async ({contract}) => {
+        const fetchFeaturedProjects = async () => {
             if (!contract) {
                 console.log("Contract not available, skipping fetch.");
                 setLoading(false);
@@ -152,7 +152,7 @@ export const LandingPage = ({ contract }) => {
                 setLoading(false);
             }
         };
-        fetchFeaturedProjects({contract});
+        fetchFeaturedProjects();
     }, [contract]);
 
     return (

@@ -128,7 +128,11 @@ export const Marketplace = ({ contract, account }) => {
 
     useEffect(() => {
         const fetchProjects = async () => {
-            if (!contract) return;
+            if (!contract) {
+                console.log("contract not found", contract);
+                
+                return;
+            }
             setLoading(true);
             try {
                 const fetchedProjects = await contract.getMarketplace();
