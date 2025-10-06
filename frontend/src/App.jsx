@@ -153,6 +153,21 @@ function App() {
         }
     };
 
+    const waitForEthereum = () => {
+        return new Promise((resolve) => {
+            if (window.ethereum) {
+                resolve(window.ethereum);
+            } else {
+                window.addEventListener('ethereum#initialized', () => {
+                    resolve(window.ethereum);
+                }, { once: true });
+                
+                // Timeout after 3 seconds
+                setTimeout(resolve, 3000);
+            }
+        });
+    };
+
     useEffect(() => {
         const checkConnection = async () => {
             if (window.ethereum) {
