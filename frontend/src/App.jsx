@@ -29,7 +29,6 @@ const amoyNetworkConfig = {
 };
 
 const ProtectedRoute = ({ children }) => {
-    // Only access localStorage on client side
     const [isAuthorized, setIsAuthorized] = useState(null);
 
     useEffect(() => {
@@ -47,23 +46,80 @@ const ProtectedRoute = ({ children }) => {
 
                 if (decoded.exp < currentTime) {
                     localStorage.removeItem('token');
+                    localStorage.removeItem('userRole');
+                    localStorage.removeItem('userName');
                     setIsAuthorized(false);
                 } else {
                     setIsAuthorized(true);
                 }
             } catch (err) {
+                console.error('Token validation error:', err);
                 localStorage.removeItem('token');
+                localStorage.removeItem('userRole');
+                localStorage.removeItem('userName');
                 setIsAuthorized(false);
             }
         }
     }, []);
 
     if (isAuthorized === null) {
-        return <div>Loading...</div>;
+        return <div className="flex items-center justify-center min-h-screen">
+            <div className="text-center">
+                <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto"></div>
+                <p className="mt-4 text-gray-600">Loading...</p>
+            </div>
+        </div>;
     }
 
     if (!isAuthorized) {
         return <Navigate to="/auth" replace />;
+    }
+
+    return children;
+};
+
+// Route wrapper to redirect authenticated users away from auth page
+const AuthRoute = ({ children }) => {
+    const [isChecking, setIsChecking] = useState(true);
+    const [userRole, setUserRole] = useState(null);
+
+    useEffect(() => {
+        if (typeof window !== 'undefined') {
+            const token = localStorage.getItem('token');
+            const role = localStorage.getItem('userRole');
+
+            if (token) {
+                try {
+                    const decoded = jwtDecode(token);
+                    const currentTime = Date.now() / 1000;
+
+                    if (decoded.exp >= currentTime) {
+                        setUserRole(role);
+                    }
+                } catch (err) {
+                    console.error('Token validation error:', err);
+                }
+            }
+            setIsChecking(false);
+        }
+    }, []);
+
+    if (isChecking) {
+        return <div className="flex items-center justify-center min-h-screen">
+            <div className="text-center">
+                <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto"></div>
+                <p className="mt-4 text-gray-600">Loading...</p>
+            </div>
+        </div>;
+    }
+
+    // Redirect authenticated users to their dashboard
+    if (userRole === 'admin') {
+        return <Navigate to="/admin/dashboard" replace />;
+    } else if (userRole === 'seller') {
+        return <Navigate to="/owner/dashboard" replace />;
+    } else if (userRole === 'buyer') {
+        return <Navigate to="/marketplace" replace />;
     }
 
     return children;
@@ -246,7 +302,11 @@ function App() {
                 <Navigation account={account} setupBlockchain={setupBlockchain}/>
                 <Routes>
                     <Route path="/" element={<LandingPage />} />
-                    <Route path="/auth" element={<Auth setupBlockchain={setupBlockchain} />} />
+                    <Route path="/auth" element={
+                        <AuthRoute>
+                            <Auth setupBlockchain={setupBlockchain} />
+                        </AuthRoute>
+                    } />
                     <Route
                         path="/marketplace"
                         element={<Marketplace contract={contract} account={account} />}
@@ -281,11 +341,19 @@ function App() {
                     />
                     <Route
                         path="/owner/register"
-                        element={<RegisterProjectWithTerritory />}
+                        element={
+                            <ProtectedRoute>
+                                <RegisterProjectWithTerritory />
+                            </ProtectedRoute>
+                        }
                     />
                     <Route
                         path="/owner/dashboard"
-                        element={<ProjectOwnerDashboard contract={contract} account={account} />}
+                        element={
+                            <ProtectedRoute>
+                                <ProjectOwnerDashboard contract={contract} account={account} />
+                            </ProtectedRoute>
+                        }
                     />
                 </Routes>
             </div>

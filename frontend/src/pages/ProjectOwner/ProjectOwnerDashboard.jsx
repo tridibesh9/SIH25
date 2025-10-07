@@ -5,6 +5,7 @@ import { ethers } from 'ethers';
 import ProjectDetailModal from './ProjectDetailModal.jsx';
 import { backend_url } from '../../api endpoints/backend_url.jsx';
 import { EnlistedProjectCard } from './EnlistedProjectCard.jsx';
+import { authenticatedFetch, checkAuthStatus } from '../../utils/authUtils.js';
 
 export const ProjectOwnerDashboard = ({ contract, account }) => {
     // State for the different project lists
@@ -25,9 +26,12 @@ export const ProjectOwnerDashboard = ({ contract, account }) => {
         const fetchAllData = async () => {
             setLoading(true);
             setError(null);
-            const token = localStorage.getItem('token');
-            if (!token) {
-                setError("Authentication token not found.");
+            
+            // Check authentication status
+            const authStatus = checkAuthStatus();
+            if (!authStatus.isAuthenticated) {
+                setError("Authentication required. Please login.");
+                navigate('/auth');
                 setLoading(false);
                 return;
             }
@@ -38,12 +42,15 @@ export const ProjectOwnerDashboard = ({ contract, account }) => {
                 console.log('🔗 [DASHBOARD] Account:', account);
                 
                 const [backendData, onChainData] = await Promise.all([
-                    // Fetch backend projects
-                    fetch(`${backend_url}/projects/userprojects`, {
-                        headers: { 'Authorization': `Bearer ${token}` },
-                    }).then(res => {
+                    // Fetch backend projects with automatic token refresh
+                    authenticatedFetch(`${backend_url}/projects/userprojects`).then(res => {
                         if (!res.ok) throw new Error("Failed to fetch projects from server.");
                         return res.json();
+                    }).catch(err => {
+                        if (err.message === 'Authentication required') {
+                            navigate('/auth');
+                        }
+                        throw err;
                     }),
                     // Fetch on-chain enlisted projects with better error handling
                     (contract && account) ? (async () => {
@@ -97,20 +104,23 @@ export const ProjectOwnerDashboard = ({ contract, account }) => {
             setError("Please connect wallet and set a valid price.");
             return;
         }
-        const token = localStorage.getItem('token');
-        if (!token) {
-            setError("Authentication token not found.");
+        
+        // Check authentication status
+        const authStatus = checkAuthStatus();
+        if (!authStatus.isAuthenticated) {
+            setError("Authentication required. Please login.");
+            navigate('/auth');
             return;
         }
+        
         setIsEnlisting(project.projectId);
         setError(null);
         try {
             const ethToInrRate = 400000;
             const priceInEth = parseFloat(priceInInr) / ethToInrRate;
             
-            const metadataResponse = await fetch(`${backend_url}/projects/upload-metadata`, {
+            const metadataResponse = await authenticatedFetch(`${backend_url}/projects/upload-metadata`, {
                 method: 'POST',
-                headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}`},
                 body: JSON.stringify({ projectId: project.projectId }),
             });
             if (!metadataResponse.ok) throw new Error("Failed to get metadata URI from backend.");
@@ -131,6 +141,9 @@ export const ProjectOwnerDashboard = ({ contract, account }) => {
             alert("Project successfully enlisted!");
         } catch (err) {
             console.error("Failed to enlist project:", err);
+            if (err.message === 'Authentication required') {
+                navigate('/auth');
+            }
             setError(err.message || "An error occurred during enlistment.");
         } finally {
             setIsEnlisting(null);

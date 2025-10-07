@@ -1,11 +1,16 @@
 import React, { useState, useEffect } from 'react';
-import { Link, useLocation } from 'react-router-dom';
-import { Leaf, Menu, X, Wallet } from 'lucide-react';
+import { Link, useLocation, useNavigate } from 'react-router-dom';
+import { Leaf, Menu, X, Wallet, LogOut, User } from 'lucide-react';
+import { jwtDecode } from 'jwt-decode';
 
 const Navigation = ({setupBlockchain}) => {
   const [isScrolled, setIsScrolled] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+  const [isAuthenticated, setIsAuthenticated] = useState(false);
+  const [userName, setUserName] = useState('');
+  const [userRole, setUserRole] = useState('');
   const location = useLocation();
+  const navigate = useNavigate();
 
   useEffect(() => {
     const handleScroll = () => {
@@ -15,6 +20,50 @@ const Navigation = ({setupBlockchain}) => {
     window.addEventListener('scroll', handleScroll);
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
+
+  useEffect(() => {
+    const checkAuth = () => {
+      const token = localStorage.getItem('token');
+      const storedName = localStorage.getItem('userName');
+      const storedRole = localStorage.getItem('userRole');
+
+      if (token) {
+        try {
+          const decoded = jwtDecode(token);
+          const currentTime = Date.now() / 1000;
+
+          if (decoded.exp >= currentTime) {
+            setIsAuthenticated(true);
+            setUserName(storedName || 'User');
+            setUserRole(storedRole || '');
+          } else {
+            // Token expired
+            handleLogout();
+          }
+        } catch (err) {
+          console.error('Token validation error:', err);
+          handleLogout();
+        }
+      } else {
+        setIsAuthenticated(false);
+        setUserName('');
+        setUserRole('');
+      }
+    };
+
+    checkAuth();
+    // Re-check auth on location change
+  }, [location]);
+
+  const handleLogout = () => {
+    localStorage.removeItem('token');
+    localStorage.removeItem('userName');
+    localStorage.removeItem('userRole');
+    setIsAuthenticated(false);
+    setUserName('');
+    setUserRole('');
+    navigate('/auth');
+  };
 
   const isHomePage = location.pathname === '/';
 
@@ -53,16 +102,40 @@ const Navigation = ({setupBlockchain}) => {
               Dashboard
             </Link>
             <div className="flex items-center space-x-4">
-              <button className="flex items-center space-x-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors">
+              <button 
+                onClick={setupBlockchain}
+                className="flex items-center space-x-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
+              >
                 <Wallet className="w-4 h-4" />
                 <span>Connect Wallet</span>
               </button>
-              <Link
-                to="/auth"
-                className="text-sm font-medium text-gray-700 hover:text-blue-600"
-              >
-                Login
-              </Link>
+              {isAuthenticated ? (
+                <div className="flex items-center space-x-3">
+                  <div className="flex items-center space-x-2 px-3 py-2 bg-gray-100 rounded-lg">
+                    <User className="w-4 h-4 text-gray-600" />
+                    <span className="text-sm font-medium text-gray-700">{userName}</span>
+                    {userRole && (
+                      <span className="text-xs px-2 py-1 bg-blue-100 text-blue-700 rounded-full">
+                        {userRole}
+                      </span>
+                    )}
+                  </div>
+                  <button
+                    onClick={handleLogout}
+                    className="flex items-center space-x-2 px-4 py-2 bg-red-100 text-red-700 rounded-lg hover:bg-red-200 transition-colors"
+                  >
+                    <LogOut className="w-4 h-4" />
+                    <span>Logout</span>
+                  </button>
+                </div>
+              ) : (
+                <Link
+                  to="/auth"
+                  className="text-sm font-medium text-gray-700 hover:text-blue-600"
+                >
+                  Login
+                </Link>
+              )}
             </div>
           </div>
 
@@ -87,25 +160,44 @@ const Navigation = ({setupBlockchain}) => {
               <Link to="/marketplace" className="block py-2 text-gray-700 hover:text-blue-600">
                 Marketplace
               </Link>
-              <Link to="/map-territory" className="block py-2 text-gray-700 hover:text-blue-600">
-                Register Project
-              </Link>
               <Link to="/dashboard" className="block py-2 text-gray-700 hover:text-blue-600">
                 Dashboard
               </Link>
               <div className="pt-2 border-t">
-                <button className="w-full flex items-center justify-center space-x-2 px-4 py-2 bg-blue-600 text-white rounded-lg mb-2"
+                <button 
+                  className="w-full flex items-center justify-center space-x-2 px-4 py-2 bg-blue-600 text-white rounded-lg mb-2"
                   onClick={setupBlockchain}
-                  >
+                >
                   <Wallet className="w-4 h-4" />
                   <span>Connect Wallet</span>
                 </button>
-                <Link
-                  to="/auth"
-                  className="block text-center py-2 text-gray-700 hover:text-blue-600"
-                >
-                  Login
-                </Link>
+                {isAuthenticated ? (
+                  <>
+                    <div className="flex items-center justify-center space-x-2 px-3 py-2 bg-gray-100 rounded-lg mb-2">
+                      <User className="w-4 h-4 text-gray-600" />
+                      <span className="text-sm font-medium text-gray-700">{userName}</span>
+                      {userRole && (
+                        <span className="text-xs px-2 py-1 bg-blue-100 text-blue-700 rounded-full">
+                          {userRole}
+                        </span>
+                      )}
+                    </div>
+                    <button
+                      onClick={handleLogout}
+                      className="w-full flex items-center justify-center space-x-2 px-4 py-2 bg-red-100 text-red-700 rounded-lg hover:bg-red-200 transition-colors"
+                    >
+                      <LogOut className="w-4 h-4" />
+                      <span>Logout</span>
+                    </button>
+                  </>
+                ) : (
+                  <Link
+                    to="/auth"
+                    className="block text-center py-2 text-gray-700 hover:text-blue-600"
+                  >
+                    Login
+                  </Link>
+                )}
               </div>
             </div>
           </div>

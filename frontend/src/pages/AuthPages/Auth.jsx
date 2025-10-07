@@ -54,23 +54,34 @@ export const Auth = ({ setupBlockchain, LinkComponent = Link }) => {
                 throw new Error(data.message || 'Login failed.');
             }
 
-            // console.log('Login successful:', data);
+            console.log('Login successful:', data);
+            
+            // Store authentication data
             localStorage.setItem('token', data.token);
-            // localStorage.setItem('userData', JSON.stringify(data.projects));
+            localStorage.setItem('userName', data.name || 'User');
+            localStorage.setItem('userRole', data.role || '');
 
             // Connect to blockchain AFTER successful login
-            await setupBlockchain();
+            try {
+                if (setupBlockchain) {
+                    await setupBlockchain();
+                }
+            } catch (blockchainErr) {
+                console.error('Blockchain connection failed:', blockchainErr);
+                // Continue even if blockchain fails - user is still logged in
+            }
 
-            // Navigate after connection is established
-            if(data.role === 'admin'){
+            // Navigate based on role
+            if (data.role === 'admin') {
                 navigate('/admin/dashboard');
-            } else if(data.role === 'seller'){
+            } else if (data.role === 'seller') {
                 navigate('/owner/dashboard');
             } else {
                 navigate('/marketplace');
             }
 
         } catch (err) {
+            console.error('Login error:', err);
             setError(err.message || "Login failed. Please try again.");
         } finally {
             setLoading(false);
@@ -83,6 +94,11 @@ export const Auth = ({ setupBlockchain, LinkComponent = Link }) => {
 
         if (!fullName || !role || !email || !password || !confirmPassword) {
             setError("Please fill out all fields.");
+            return;
+        }
+
+        if (password.length < 6) {
+            setError("Password must be at least 6 characters long.");
             return;
         }
 
@@ -111,10 +127,17 @@ export const Auth = ({ setupBlockchain, LinkComponent = Link }) => {
             }
 
             console.log('Registration successful:', data);
+            
+            // Show success message and switch to login
             setIsLogin(true);
             clearInputs();
+            setError(null);
+            
+            // You could also show a success toast here
+            alert('Registration successful! Please login with your credentials.');
 
         } catch (err) {
+            console.error('Registration error:', err);
             setError(err.message || "Registration failed. Please try again.");
         } finally {
             setLoading(false);
