@@ -89,10 +89,10 @@ const ProjectCard = ({ project, ethToInrRate, viewMode }) => {
                  </div>
             </div>
             <div className="p-6">
-                <div className="flex items-center text-sm text-gray-500 mb-2">
+                {/* <div className="flex items-center text-sm text-gray-500 mb-2">
                     <MapPin className="w-4 h-4 mr-2 flex-shrink-0" />
                     <span>{metadata.location}</span>
-                </div>
+                </div> */}
                 <h3 className="text-xl font-bold text-gray-900 mb-4 group-hover:text-blue-700 transition-colors">
                     {metadata.projectName}
                 </h3>

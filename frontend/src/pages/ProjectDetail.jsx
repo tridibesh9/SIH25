@@ -1,8 +1,8 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import { useParams, Link, useLocation } from 'react-router-dom';
 import { ethers } from 'ethers';
 import { MapPin, ExternalLink, Shield, Globe, Minus, Plus, FileText, User, Hash } from 'lucide-react';
-import { MapContainer, TileLayer } from 'react-leaflet';
+import { MapContainer, TileLayer, GeoJSON } from 'react-leaflet';
 import 'leaflet/dist/leaflet.css';
 
 // The component now needs the `contract` prop to make transactions
@@ -14,7 +14,9 @@ export const ProjectDetail = ({ contract }) => {
     const [ethToInrRate, setEthToInrRate] = useState(400000);
     const [activeImage, setActiveImage] = useState(null);
     const [isPurchasing, setIsPurchasing] = useState(false); // State for loading during purchase
-
+    const [territoryData, setTerritoryData] = useState(null);
+    const [mapCenter, setMapCenter] = useState([20.5937, 78.9629]); // Default India center
+    const [mapZoom, setMapZoom] = useState(5); // Default zoom for no territory
     // The function to handle the purchase transaction
     const handlebuytokens = async () => {
         if (!contract) {
@@ -58,6 +60,33 @@ export const ProjectDetail = ({ contract }) => {
     useEffect(() => {
         if (projectMetadata?.projectImages?.[0]) {
             setActiveImage(projectMetadata.projectImages[0]);
+        }
+
+        // Parse territory data if it exists
+        if (projectMetadata?.location) {
+            try {
+                // Check if location is a GeoJSON string
+                const parsedLocation = typeof projectMetadata.location === 'string' 
+                    ? JSON.parse(projectMetadata.location) 
+                    : projectMetadata.location;
+                
+                if (parsedLocation.type === 'Feature' && parsedLocation.geometry) {
+                    setTerritoryData(parsedLocation);
+                    
+                    // Calculate center from GeoJSON bounds
+                    const coordinates = parsedLocation.geometry.coordinates[0];
+                    if (coordinates && coordinates.length > 0) {
+                        const lngs = coordinates.map(coord => coord[0]);
+                        const lats = coordinates.map(coord => coord[1]);
+                        const centerLng = (Math.min(...lngs) + Math.max(...lngs)) / 2;
+                        const centerLat = (Math.min(...lats) + Math.max(...lats)) / 2;
+                        setMapCenter([centerLat, centerLng]);
+                        setMapZoom(15); // Increased zoom for better visibility
+                    }
+                }
+            } catch (e) {
+                console.log("Location is not GeoJSON, using default map view");
+            }
         }
     }, [projectMetadata]);
 
@@ -123,9 +152,47 @@ export const ProjectDetail = ({ contract }) => {
 
                         <div className="bg-white rounded-2xl p-8 shadow-sm">
                             <h1 className="text-3xl font-bold text-blue-900 mb-4">{projectMetadata.projectName}</h1>
-                            <div className="flex items-center text-gray-600 mb-6">
-                                <MapPin className="w-5 h-5 mr-2" /> {projectMetadata.location}
+                            
+                            {/* Project Location Map */}
+                            <div className="mb-6">
+                                <div className="flex items-center text-gray-700 mb-3">
+                                    <MapPin className="w-5 h-5 mr-2 text-blue-600" /> 
+                                    <span className="font-semibold">Project Location & Territory</span>
+                                </div>
+                                <div className="h-80 rounded-xl overflow-hidden border-2 border-gray-200 shadow-md">
+                                    <MapContainer
+                                        key={`${mapCenter[0]}-${mapCenter[1]}-${mapZoom}`}
+                                        center={mapCenter}
+                                        zoom={mapZoom}
+                                        style={{ height: '100%', width: '100%' }}
+                                        className="rounded-xl"
+                                        scrollWheelZoom={true}
+                                    >
+                                        <TileLayer
+                                            attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+                                            url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
+                                        />
+                                        
+                                        {/* Display project territory if available */}
+                                        {territoryData && (
+                                            <GeoJSON 
+                                                data={territoryData} 
+                                                style={{
+                                                    color: '#3B82F6',
+                                                    weight: 3,
+                                                    opacity: 0.8,
+                                                    fillColor: '#60A5FA',
+                                                    fillOpacity: 0.3
+                                                }}
+                                            />
+                                        )}
+                                    </MapContainer>
+                                </div>
+                                {!territoryData && (
+                                    <p className="text-sm text-gray-500 mt-2 italic">Territory mapping data not available for this project</p>
+                                )}
                             </div>
+
                             <p className="text-gray-700 text-lg leading-relaxed mb-8">
                                 {projectMetadata.siteDescription}
                             </p>
