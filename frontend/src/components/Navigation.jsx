@@ -3,7 +3,7 @@ import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { Leaf, Menu, X, Wallet, LogOut, User } from 'lucide-react';
 import { jwtDecode } from 'jwt-decode';
 
-const Navigation = ({setupBlockchain}) => {
+const Navigation = ({account, setupBlockchain, setAccount}) => {
   const [isScrolled, setIsScrolled] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [isAuthenticated, setIsAuthenticated] = useState(false);
@@ -63,6 +63,7 @@ const Navigation = ({setupBlockchain}) => {
     setUserName('');
     setUserRole('');
     navigate('/auth');
+    setAccount('');
   };
 
   const isHomePage = location.pathname === '/';
@@ -102,13 +103,22 @@ const Navigation = ({setupBlockchain}) => {
               Dashboard
             </Link>
             <div className="flex items-center space-x-4">
-              <button 
-                onClick={setupBlockchain}
-                className="flex items-center space-x-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
-              >
-                <Wallet className="w-4 h-4" />
-                <span>Connect Wallet</span>
-              </button>
+              {account.length > 0 ? (
+                <button className="flex items-center space-x-2 px-4 py-2 bg-green-600 text-white rounded-lg">
+                  <Wallet className="w-4 h-4" />
+                  <span>
+                    Connected: {account.slice(0, 6)}...{account.slice(-4)}
+                  </span>
+                </button>
+              ) : (
+                <button
+                  onClick={setupBlockchain}
+                  className="flex items-center space-x-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
+                >
+                  <Wallet className="w-4 h-4" />
+                  <span>Connect Wallet</span>
+                </button>
+              )}
               {isAuthenticated ? (
                 <div className="flex items-center space-x-3">
                   <div className="flex items-center space-x-2 px-3 py-2 bg-gray-100 rounded-lg">

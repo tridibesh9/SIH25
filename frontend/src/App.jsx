@@ -28,14 +28,14 @@ const amoyNetworkConfig = {
     blockExplorerUrls: ['https://www.oklink.com/amoy'],
 };
 
-const ProtectedRoute = ({ children }) => {
+const ProtectedRoute = ({ account, contract, children }) => {
     const [isAuthorized, setIsAuthorized] = useState(null);
 
     useEffect(() => {
         if (typeof window !== 'undefined') {
             const token = localStorage.getItem('token');
 
-            if (!token) {
+            if (!token && !contract && !account) {
                 setIsAuthorized(false);
                 return;
             }
@@ -169,6 +169,11 @@ function App() {
     };
 
     const setupBlockchain = async () => {
+
+        if(!localStorage.getItem('token')){
+            alert("please login first");
+            return;
+        }
         // CRITICAL: Only run on client side
         if (typeof window === 'undefined') {
             console.log('🔗 [BLOCKCHAIN] Skipping setup - not on client side');
@@ -202,15 +207,22 @@ function App() {
                 }
 
                 // Request account access
-                const accounts = await window.ethereum.request({ method: 'eth_requestAccounts' });
-                console.log('🔗 [BLOCKCHAIN] Accounts received:', accounts);
+                await window.ethereum.request({
+                    method: 'wallet_requestPermissions',
+                    params: [{ eth_accounts: {} }],
+                });
 
+                // ✅ Now request account access again
+                const accounts = await window.ethereum.request({ method: 'eth_requestAccounts' });
+                const selectedAccount = accounts[0];
+                setAccount(selectedAccount);
+                console.log("🔗 [BLOCKCHAIN] Account connected:", selectedAccount);
                 const signer = await provider.getSigner();
-                const selectedAccount = await signer.getAddress();
-                setAccount(selectedAccount);
-                console.log("🔗 [BLOCKCHAIN] Account connected:", selectedAccount);
+                // const selectedAccount = await signer.getAddress();
+                // setAccount(selectedAccount);
+                // console.log("🔗 [BLOCKCHAIN] Account connected:", selectedAccount);
 
-                console.log("🔗 [BLOCKCHAIN] Creating contract instance...");
+                // console.log("🔗 [BLOCKCHAIN] Creating contract instance...");
                 const contractInstance = new ethers.Contract(contractAddress, contractABI, signer);
                 setContract(contractInstance);
                 console.log("🔗 [BLOCKCHAIN] Contract instance created successfully");
@@ -258,12 +270,12 @@ function App() {
                     const accounts = await window.ethereum.request({ method: 'eth_accounts' });
                     console.log('🔗 [BLOCKCHAIN] Existing accounts:', accounts);
                     
-                    if (accounts.length > 0) {
-                        console.log("🔗 [BLOCKCHAIN] User already connected. Re-establishing...");
-                        await setupBlockchain();
-                    } else {
-                        console.log("🔗 [BLOCKCHAIN] No existing connection found");
-                    }
+                    // // if (accounts.length > 0) {
+                    // //     console.log("🔗 [BLOCKCHAIN] User already connected. Re-establishing...");
+                    // //     await setupBlockchain();
+                    // } else {
+                    //     console.log("🔗 [BLOCKCHAIN] No existing connection found");
+                    // }
                 } catch (err) {
                     console.error('🔗 [BLOCKCHAIN] Error checking connection:', err);
                 }
@@ -299,59 +311,29 @@ function App() {
     return (
         <Router>
             <div className="min-h-screen bg-gray-50">
-                <Navigation account={account} setupBlockchain={setupBlockchain}/>
+                <Navigation setAccount={setAccount} setContract={setContract} account={account} setupBlockchain={setupBlockchain} />
                 <Routes>
+                    {/* Public route */}
                     <Route path="/" element={<LandingPage />} />
-                    <Route path="/auth" element={
-                        <AuthRoute>
-                            <Auth setupBlockchain={setupBlockchain} />
-                        </AuthRoute>
-                    } />
+
+                    {/* Auth page (also public) */}
+                    <Route path="/auth" element={<Auth setupBlockchain={setupBlockchain} />} />
+
+                    {/* All other routes are protected */}
                     <Route
-                        path="/marketplace"
-                        element={<Marketplace contract={contract} account={account} />}
-                    />
-                    <Route
-                        path="/dashboard"
-                        element={<Dashboard contract={contract} account={account} />}
-                    />
-                    <Route
-                        path="/project/:id"
-                        element={<ProjectDetail contract={contract} account={account} />}
-                    />
-                    <Route
-                        path="/certificate/:id"
-                        element={<Certificate contract={contract} />}
-                    />
-                    <Route
-                        path="/admin/dashboard"
+                        path="/*"
                         element={
-                            <ProtectedRoute>
-                                <AdminDashboard />
-                            </ProtectedRoute>
-                        }
-                    />
-                    <Route
-                        path="/admin/drone-upload"
-                        element={
-                            <ProtectedRoute>
-                                <DroneImageUpload />
-                            </ProtectedRoute>
-                        }
-                    />
-                    <Route
-                        path="/owner/register"
-                        element={
-                            <ProtectedRoute>
-                                <RegisterProjectWithTerritory />
-                            </ProtectedRoute>
-                        }
-                    />
-                    <Route
-                        path="/owner/dashboard"
-                        element={
-                            <ProtectedRoute>
-                                <ProjectOwnerDashboard contract={contract} account={account} />
+                            <ProtectedRoute account={account} contract={contract}>
+                                <Routes>
+                                    <Route path="/marketplace" element={<Marketplace contract={contract} account={account} />} />
+                                    <Route path="/dashboard" element={<Dashboard contract={contract} account={account} />} />
+                                    <Route path="/project/:id" element={<ProjectDetail contract={contract} account={account} />} />
+                                    <Route path="/certificate/:id" element={<Certificate contract={contract} />} />
+                                    <Route path="/admin/dashboard" element={<AdminDashboard />} />
+                                    <Route path="/admin/drone-upload" element={<DroneImageUpload />} />
+                                    <Route path="/owner/register" element={<RegisterProjectWithTerritory />} />
+                                    <Route path="/owner/dashboard" element={<ProjectOwnerDashboard contract={contract} account={account} />} />
+                                </Routes>
                             </ProtectedRoute>
                         }
                     />
