@@ -202,7 +202,7 @@ function App() {
                     const accounts = await window.ethereum.request({ method: 'eth_accounts' });
                     console.log('🔗 [BLOCKCHAIN] Existing accounts:', accounts);
                     
-                    if (accounts.length > 0 && localStorage.getItem('token')) {
+                    if (accounts.length > 0) {
                         console.log("🔗 [BLOCKCHAIN] User already connected. Re-establishing...");
                         await setupBlockchain();
                     } else {
