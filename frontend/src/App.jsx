@@ -207,16 +207,16 @@ function App() {
                 }
 
                 // Request account access
-                await window.ethereum.request({
-                    method: 'wallet_requestPermissions',
-                    params: [{ eth_accounts: {} }],
-                });
+                await window.ethereum.request({
+                    method: 'wallet_requestPermissions',
+                    params: [{ eth_accounts: {} }],
+                });
 
-                // ✅ Now request account access again
-                const accounts = await window.ethereum.request({ method: 'eth_requestAccounts' });
-                const selectedAccount = accounts[0];
-                setAccount(selectedAccount);
-                console.log("🔗 [BLOCKCHAIN] Account connected:", selectedAccount);
+                // ✅ Now request account access again
+                const accounts = await window.ethereum.request({ method: 'eth_requestAccounts' });
+                const selectedAccount = accounts[0];
+                setAccount(selectedAccount);
+                 console.log("🔗 [BLOCKCHAIN] Account connected:", selectedAccount);
                 const signer = await provider.getSigner();
                 // const selectedAccount = await signer.getAddress();
                 // setAccount(selectedAccount);
