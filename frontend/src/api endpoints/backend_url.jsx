@@ -1,1 +1,1 @@
-export const backend_url = "https://sih25-finalfix.onrender.com";
+export const backend_url = "http://localhost:3030";

@@ -148,7 +148,7 @@ function App() {
                 method: 'wallet_switchEthereumChain',
                 params: [{ chainId: DESIRED_CHAIN_ID_HEX }],
             });
-            window.location.reload();
+//             window.location.reload();
         } catch (switchError) {
             if (switchError.code === 4902) {
                 try {
@@ -156,7 +156,7 @@ function App() {
                         method: 'wallet_addEthereumChain',
                         params: [amoyNetworkConfig],
                     });
-                    window.location.reload();
+//                     window.location.reload();
                 } catch (addError) {
                     console.error("Failed to add the network:", addError);
                     alert("Failed to add Polygon Amoy. Please add it manually.");

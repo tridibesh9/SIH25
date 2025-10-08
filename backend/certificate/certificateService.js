@@ -3,7 +3,6 @@ import puppeteer from 'puppeteer';
 import crypto from 'crypto';
 import FormData from 'form-data';
 import { Readable } from 'stream';
-
 const generateCertificateHTML = (data) => {
     return `
     <!DOCTYPE html>
@@ -74,7 +73,6 @@ const generateCertificateHTML = (data) => {
                 <div class="verification-box">
                     <h4>Blockchain Verification</h4>
                     <p>This certificate is permanently recorded on the blockchain for transparent verification.</p>
-                    <div class="tx-hash">TX: ${data.transactionHash}</div>
                 </div>
                 <div class="footer">
                     <p>This certificate represents the permanent retirement of verified carbon offset credits. This action cannot be reversed.</p>
@@ -111,7 +109,11 @@ export const generateAndUploadCertificate = async (retirementDetails, originalPr
 
     // 2. Generate PDF from HTML using the mapped data
     const htmlContent = generateCertificateHTML(certificateData);
-    const browser = await puppeteer.launch({ headless: true, args: ['--no-sandbox', '--disable-setuid-sandbox'] });
+    const browser = await puppeteer.launch({
+        executablePath: puppeteer.executablePath(),
+        headless: true, 
+        args: ['--no-sandbox', '--disable-setuid-sandbox'] 
+    });
     const page = await browser.newPage();
     await page.setContent(htmlContent, { waitUntil: 'networkidle0' }); // Wait for images/fonts
     const pdfBuffer = await page.pdf({ format: 'A4', printBackground: true });

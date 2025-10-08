@@ -320,7 +320,7 @@ export const RetireProject = async (req, res) => {
             DocumentCID,
             retiredAt,
         } = req.body;
-
+        console.log(req.body);
         // 2. Validate the project
         const project = await Project.findOne({ projectId: externalId });
         if (!project) {
@@ -349,6 +349,7 @@ export const RetireProject = async (req, res) => {
         // 4. Call the certificate service to generate and upload the PDF
         // The `retirementDetails` object (containing quantityRetired, retiredByAddress, etc.)
         // and the fetched metadata are passed to the service.
+        console.log(retirementDetails, originalMetadata);
         const certificateCID = await generateAndUploadCertificate(retirementDetails, originalMetadata);
 
         // // 5. (Optional) Save the certificate CID to your database if needed
