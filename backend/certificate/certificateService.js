@@ -112,11 +112,21 @@ export const generateAndUploadCertificate = async (retirementDetails, originalPr
 
     // 2. Generate PDF from HTML using the mapped data
     const htmlContent = generateCertificateHTML(certificateData);
+
+
     const browser = await puppeteer.launch({
-        executablePath: puppeteer.executablePath(),
-        headless: true, 
-        args: ['--no-sandbox', '--disable-setuid-sandbox'] 
+        headless: true, // always use headless mode on servers
+        args: [
+        '--no-sandbox',             // required on Render
+        '--disable-setuid-sandbox', // required on Render
+        '--disable-dev-shm-usage',  // optional: prevents memory issues
+        '--disable-gpu'             // optional: helps in some environments
+        ]
+        // don't set executablePath — let Puppeteer use its bundled Chromium
     });
+
+
+
     const page = await browser.newPage();
     await page.setContent(htmlContent, { waitUntil: 'networkidle0' }); // Wait for images/fonts
     const pdfBuffer = await page.pdf({ format: 'A4', printBackground: true });
