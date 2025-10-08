@@ -2,9 +2,11 @@ import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { ethers } from 'ethers';
 import { motion } from 'framer-motion';
-import { ArrowRight, Shield, Globe, Zap, CheckCircle, MapPin } from 'lucide-react';
+// Added new icons for the "Get Started" section: Download, Wallet, Network
+import { ArrowRight, Shield, Globe, Zap, CheckCircle, MapPin, ChevronDown, Download, Wallet, Network } from 'lucide-react';
 
-// --- Reusable Project Card Component (Adapted from your Marketplace) ---
+// --- Reusable Project Card Component ---
+// This component remains unchanged.
 const ProjectCard = ({ project, ethToInrRate }) => {
     const [metadata, setMetadata] = useState(null);
     const [isLoading, setIsLoading] = useState(true);
@@ -56,7 +58,6 @@ const ProjectCard = ({ project, ethToInrRate }) => {
     const priceInEth = parseFloat(ethers.formatEther(project.valuePerCarbon));
     const priceInInr = priceInEth * ethToInrRate;
 
-    // A serializable project object to pass via Link state
     const serializableProject = {
         projectId: Number(project.projectId),
         externalId: project.externalId,
@@ -70,7 +71,7 @@ const ProjectCard = ({ project, ethToInrRate }) => {
 
     return (
         <div className="group bg-white rounded-2xl overflow-hidden shadow-sm hover:shadow-lg transition-all duration-300">
-             <div className="relative">
+            <div className="relative">
                 <img
                     src={metadata.projectImages?.[0] || 'https://via.placeholder.com/400x300?text=No+Image'}
                     alt={metadata.projectName}
@@ -81,9 +82,9 @@ const ProjectCard = ({ project, ethToInrRate }) => {
                         {metadata.type || 'Project'}
                     </span>
                 </div>
-                 <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-center justify-center">
-                    <Link 
-                        to={`/project/${project.externalId}`} 
+                <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-center justify-center">
+                    <Link
+                        to={`/project/${project.externalId}`}
                         state={{ projectOnChain: serializableProject, projectMetadata: metadata }}
                         className="px-6 py-3 bg-white text-blue-800 font-bold rounded-lg transform translate-y-4 group-hover:translate-y-0 transition-transform duration-300 shadow-lg"
                     >
@@ -92,7 +93,7 @@ const ProjectCard = ({ project, ethToInrRate }) => {
                 </div>
             </div>
             <div className="p-6">
-                 <div className="flex items-center text-sm text-gray-500 mb-2">
+                <div className="flex items-center text-sm text-gray-500 mb-2">
                     <MapPin className="w-4 h-4 mr-2 flex-shrink-0" />
                     <span>{metadata.location}</span>
                 </div>
@@ -114,11 +115,10 @@ const ProjectCard = ({ project, ethToInrRate }) => {
     );
 };
 
-
 export const LandingPage = ({ contract }) => {
     const [projects, setProjects] = useState([]);
     const [loading, setLoading] = useState(true);
-    const [ethToInrRate, setEthToInrRate] = useState(280000); // You can fetch this dynamically
+    const [ethToInrRate, setEthToInrRate] = useState(270000);
 
     const fadeInUp = {
         initial: { opacity: 0, y: 60 },
@@ -144,7 +144,6 @@ export const LandingPage = ({ contract }) => {
             setLoading(true);
             try {
                 const allProjects = await contract.getMarketplace();
-                // We only want to feature the first 3 projects
                 setProjects(allProjects.slice(0, 3));
             } catch (error) {
                 console.error("Error fetching featured projects from smart contract:", error);
@@ -156,7 +155,7 @@ export const LandingPage = ({ contract }) => {
     }, [contract]);
 
     return (
-        <div className="min-h-screen">
+        <div className="min-h-screen bg-white">
             {/* Hero Section */}
             <section className="relative h-screen flex items-center justify-center overflow-hidden">
                 <div
@@ -193,6 +192,58 @@ export const LandingPage = ({ contract }) => {
                         </Link>
                     </motion.div>
                 </div>
+                <motion.div
+                    animate={{ y: [0, 10, 0] }}
+                    transition={{ duration: 1.5, repeat: Infinity, repeatType: "loop" }}
+                    className="absolute bottom-10 left-1/2 -translate-x-1/2 z-10 flex flex-col items-center text-white cursor-pointer"
+                >
+                    <span className="text-sm font-medium">Scroll for more</span>
+                    <ChevronDown className="w-6 h-6" />
+                </motion.div>
+            </section>
+                        {/* --- [NEW] Get Started Section (MetaMask Instructions) --- */}
+            <section className="py-20 bg-blue-50">
+                <div className="max-w-7xl mx-auto px-4 text-center">
+                    <motion.div initial={{ opacity: 0, y: 30 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ duration: 0.6 }}>
+                        <img src="https://upload.wikimedia.org/wikipedia/commons/3/36/MetaMask_Fox.svg" alt="MetaMask Fox Logo" className="h-20 mx-auto mb-4" />
+                        <h2 className="text-4xl font-bold text-blue-900 mb-4">Get Started in 3 Easy Steps</h2>
+                        <p className="text-xl text-gray-600 max-w-3xl mx-auto mb-12">
+                            To buy, sell, or trade carbon credits on our platform, you'll need a Web3 wallet. We recommend MetaMask.
+                        </p>
+                    </motion.div>
+
+                    <div className="grid grid-cols-1 md:grid-cols-3 gap-8 max-w-5xl mx-auto">
+                        {/* Step 1: Install */}
+                        <motion.div className="bg-white p-8 rounded-2xl shadow-sm" initial={{ opacity: 0, y: 30 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ duration: 0.6, delay: 0.1 }}>
+                            <div className="w-16 h-16 bg-blue-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                                <Download className="w-8 h-8 text-blue-600" />
+                            </div>
+                            <h3 className="text-xl font-semibold text-gray-800 mb-2">1. Install MetaMask</h3>
+                            <p className="text-gray-600 mb-4">Add the MetaMask extension to your browser.</p>
+                            <a href="https://metamask.io/download/" target="_blank" rel="noopener noreferrer" className="inline-flex items-center justify-center px-6 py-2 bg-blue-600 text-white rounded-lg font-semibold hover:bg-blue-700 transition-colors">
+                                Download Now
+                            </a>
+                        </motion.div>
+
+                        {/* Step 2: Setup */}
+                        <motion.div className="bg-white p-8 rounded-2xl shadow-sm" initial={{ opacity: 0, y: 30 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ duration: 0.6, delay: 0.2 }}>
+                            <div className="w-16 h-16 bg-blue-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                                <Wallet className="w-8 h-8 text-blue-600" />
+                            </div>
+                            <h3 className="text-xl font-semibold text-gray-800 mb-2">2. Set Up Your Wallet</h3>
+                            <p className="text-gray-600">Create a new wallet and make sure to store your secret recovery phrase in a safe place.</p>
+                        </motion.div>
+
+                        {/* Step 3: Connect */}
+                        <motion.div className="bg-white p-8 rounded-2xl shadow-sm" initial={{ opacity: 0, y: 30 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ duration: 0.6, delay: 0.3 }}>
+                            <div className="w-16 h-16 bg-blue-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                                <Network className="w-8 h-8 text-blue-600" />
+                            </div>
+                            <h3 className="text-xl font-semibold text-gray-800 mb-2">3. Connect to Amoy</h3>
+                            <p className="text-gray-600">Ensure your wallet is connected to the Polygon Amoy testnet. If you have issues, try restarting your browser.</p>
+                        </motion.div>
+                    </div>
+                </div>
             </section>
 
             {/* How It Works Section */}
@@ -214,20 +265,13 @@ export const LandingPage = ({ contract }) => {
                     <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-6 gap-8">
                         {[
                             { icon: Globe, title: 'Register Project', desc: 'Submit your environmental project' },
-                            { icon: Shield, title: 'Verify & Approve', desc: 'Third-party verification process' },
+                            { icon: Shield, title: 'Verify & Approve', desc: 'Third-party verification' },
                             { icon: Zap, title: 'Tokenize Credits', desc: 'Blockchain tokenization' },
                             { icon: ArrowRight, title: 'Buy & Sell', desc: 'Trade on our marketplace' },
                             { icon: CheckCircle, title: 'Retire for Impact', desc: 'Retire credits for offset' },
                             { icon: Shield, title: 'Get Certificate', desc: 'Receive verified certificate' }
                         ].map((step, index) => (
-                            <motion.div
-                                key={index}
-                                className="text-center"
-                                initial={{ opacity: 0, y: 30 }}
-                                whileInView={{ opacity: 1, y: 0 }}
-                                viewport={{ once: true }}
-                                transition={{ duration: 0.6, delay: index * 0.1 }}
-                            >
+                            <motion.div key={index} className="text-center" initial={{ opacity: 0, y: 30 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ duration: 0.6, delay: index * 0.1 }}>
                                 <div className="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-4">
                                     <step.icon className="w-8 h-8 text-green-600" />
                                 </div>
@@ -242,58 +286,31 @@ export const LandingPage = ({ contract }) => {
             {/* Featured Projects Section */}
             <section className="py-20 bg-gray-50">
                 <div className="max-w-7xl mx-auto px-4">
-                    <motion.div
-                        className="text-center mb-16"
-                        initial={{ opacity: 0, y: 30 }}
-                        whileInView={{ opacity: 1, y: 0 }}
-                        viewport={{ once: true }}
-                        transition={{ duration: 0.6 }}
-                    >
+                    <motion.div className="text-center mb-16" initial={{ opacity: 0, y: 30 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ duration: 0.6 }}>
                         <h2 className="text-4xl font-bold text-green-800 mb-4">Featured Projects</h2>
-                        <p className="text-xl text-gray-600">
-                            High-impact environmental projects making a difference today
-                        </p>
+                        <p className="text-xl text-gray-600">High-impact environmental projects making a difference today</p>
                     </motion.div>
 
-                    <motion.div
-                        className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8"
-                        variants={stagger}
-                        initial="initial"
-                        whileInView="animate"
-                        viewport={{ once: true }}
-                    >
-                        {loading ? (
-                            [...Array(3)].map((_, index) => (
-                                <div key={index} className="bg-white p-6 rounded-2xl shadow-sm animate-pulse">
-                                    <div className="w-full h-48 bg-gray-200 rounded-xl mb-4"></div>
-                                    <div className="h-5 bg-gray-200 rounded w-3/4 mb-3"></div>
-                                    <div className="h-4 bg-gray-200 rounded w-1/2 mb-4"></div>
-                                    <div className="flex justify-between items-center">
-                                        <div className="h-8 bg-gray-200 rounded w-1/3"></div>
-                                        <div className="h-6 bg-gray-200 rounded w-1/4"></div>
-                                    </div>
+                    <motion.div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8" variants={stagger} initial="initial" whileInView="animate" viewport={{ once: true }}>
+                        {loading ? ([...Array(3)].map((_, index) => (
+                            <div key={index} className="bg-white p-6 rounded-2xl shadow-sm animate-pulse">
+                                <div className="w-full h-48 bg-gray-200 rounded-xl mb-4"></div>
+                                <div className="h-5 bg-gray-200 rounded w-3/4 mb-3"></div>
+                                <div className="h-4 bg-gray-200 rounded w-1/2 mb-4"></div>
+                                <div className="flex justify-between items-center">
+                                    <div className="h-8 bg-gray-200 rounded w-1/3"></div>
+                                    <div className="h-6 bg-gray-200 rounded w-1/4"></div>
                                 </div>
-                            ))
-                        ) : (
-                            projects.map((project) => (
-                                <motion.div key={Number(project.projectId)} variants={fadeInUp}>
-                                    <ProjectCard project={project} ethToInrRate={ethToInrRate} />
-                                </motion.div>
-                            ))
-                        )}
+                            </div>
+                        ))) : (projects.map((project) => (
+                            <motion.div key={Number(project.projectId)} variants={fadeInUp}>
+                                <ProjectCard project={project} ethToInrRate={ethToInrRate} />
+                            </motion.div>
+                        )))}
                     </motion.div>
 
-                    <motion.div
-                        className="text-center mt-12"
-                        initial={{ opacity: 0, y: 30 }}
-                        whileInView={{ opacity: 1, y: 0 }}
-                        viewport={{ once: true }}
-                        transition={{ duration: 0.6, delay: 0.3 }}
-                    >
-                        <Link
-                            to="/marketplace"
-                            className="inline-flex items-center px-8 py-3 bg-green-800 text-white rounded-xl font-semibold hover:bg-green-900 transition-colors"
-                        >
+                    <motion.div className="text-center mt-12" initial={{ opacity: 0, y: 30 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ duration: 0.6, delay: 0.3 }}>
+                        <Link to="/marketplace" className="inline-flex items-center px-8 py-3 bg-green-800 text-white rounded-xl font-semibold hover:bg-green-900 transition-colors">
                             View All Projects
                             <ArrowRight className="ml-2 w-5 h-5" />
                         </Link>
@@ -301,20 +318,14 @@ export const LandingPage = ({ contract }) => {
                 </div>
             </section>
             
-            {/* Trust & Partners Section */}
-             <section className="py-20 bg-white">
-                <div className="max-w-7xl mx-auto px-4 text-center">
-                    <motion.div
-                        initial={{ opacity: 0, y: 30 }}
-                        whileInView={{ opacity: 1, y: 0 }}
-                        viewport={{ once: true }}
-                        transition={{ duration: 0.6 }}
-                    >
-                        <h2 className="text-3xl font-bold text-green-800 mb-4">Trusted by Leading Organizations</h2>
-                        <p className="text-xl text-gray-600 mb-12">
-                            Verified by industry-leading standards and trusted by global corporations
-                        </p>
 
+
+            {/* Trust & Partners Section */}
+            <section className="py-20 bg-white">
+                <div className="max-w-7xl mx-auto px-4 text-center">
+                    <motion.div initial={{ opacity: 0, y: 30 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ duration: 0.6 }}>
+                        <h2 className="text-3xl font-bold text-green-800 mb-4">Trusted by Leading Organizations</h2>
+                        <p className="text-xl text-gray-600 mb-12">Verified by industry-leading standards and trusted by global corporations</p>
                         <div className="grid grid-cols-2 md:grid-cols-4 gap-8 items-center opacity-60">
                             {['Verra', 'Gold Standard', 'Climate Action Reserve', 'VCS'].map((partner, index) => (
                                 <div key={index} className="text-2xl font-bold text-gray-400">

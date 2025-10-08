@@ -50,7 +50,7 @@ export const RetiredCreditCard = ({ project, contract }) => {
                 retiredAt: new Date(Number(project.createdAt) * 1000).toISOString(),
             };
 
-            // console.log("Sending data to backend to generate certificate...", dataToSend);
+            console.log("Sending data to backend to generate certificate...", dataToSend);
             const backendResponse = await fetch(`${backend_url}/projects/retireproject`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },

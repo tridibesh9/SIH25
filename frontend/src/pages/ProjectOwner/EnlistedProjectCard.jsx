@@ -27,13 +27,20 @@ export const EnlistedProjectCard = ({ project }) => {
     const [isLoading, setIsLoading] = useState(true);
     const [error, setError] = useState(null);
     const [isExpanded, setIsExpanded] = useState(false);
-    const [ethToInrRate, setEthToInrRate] = useState(null);
+
+    // Hardcoded ETH to INR conversion rate to avoid network errors
+    const ETH_TO_INR_RATE = 400000;
 
     // Effect for fetching project metadata from IPFS
     useEffect(() => {
         const fetchMetadata = async () => {
+            setIsLoading(true);
+            setError(null);
+            setMetadata(null);
+            
             if (!project.documentCID) {
                 setError("Document CID is missing.");
+                setIsLoading(false);
                 return;
             }
             try {
@@ -47,36 +54,16 @@ export const EnlistedProjectCard = ({ project }) => {
             } catch (err) {
                 console.error("Error fetching metadata:", err);
                 setError(err.message);
+            } finally {
+                setIsLoading(false);
             }
         };
 
         fetchMetadata();
     }, [project.documentCID]);
 
-    // Effect for fetching ETH to INR conversion rate
-    useEffect(() => {
-        const fetchEthPrice = async () => {
-            try {
-                const response = await fetch('https://api.coingecko.com/api/v3/simple/price?ids=ethereum&vs_currencies=inr');
-                if (!response.ok) {
-                    throw new Error('Failed to fetch ETH price');
-                }
-                const data = await response.json();
-                setEthToInrRate(data.ethereum.inr);
-            } catch (err) {
-                console.error("Could not fetch ETH to INR rate:", err);
-                // Set a fallback or handle the error appropriately
-                setEthToInrRate(null);
-            } finally {
-                // Combined loading state check
-                if (metadata) setIsLoading(false);
-            }
-        };
 
-        fetchEthPrice();
-    }, [metadata]); // Rerun if metadata changes, ensuring both are loaded
-
-    if (isLoading || !metadata) {
+    if (isLoading) {
         return <CardSkeleton />;
     }
 
@@ -87,18 +74,21 @@ export const EnlistedProjectCard = ({ project }) => {
             </div>
         );
     }
+    
+    if (!metadata) {
+        return null; 
+    }
 
     // Format the price from Wei to ETH
     const priceInEth = parseFloat(ethers.formatEther(project.valuePerCarbon));
     const availableQuantity = Number(project.quantity);
 
-    // Calculate and format the price in INR
-    const priceInInr = ethToInrRate ? (priceInEth * ethToInrRate) : null;
-    const formattedInrPrice = priceInInr ? 
-        priceInInr.toLocaleString('en-IN', {
-            minimumFractionDigits: 2,
-            maximumFractionDigits: 2,
-        }) : '---';
+    // Calculate and format the price in INR using the desired currency style
+    const priceInInr = priceInEth * ETH_TO_INR_RATE;
+    const formattedInrPrice = priceInInr.toLocaleString('en-IN', {
+        style: 'currency',
+        currency: 'INR',
+    });
 
 
     return (
@@ -120,10 +110,10 @@ export const EnlistedProjectCard = ({ project }) => {
                             <h3 className="text-2xl font-bold text-gray-800 mb-1">{metadata.projectName}</h3>
                             <div className="flex items-center text-gray-500 space-x-4">
                                 <span className="flex items-center text-sm">
-                                    <MapPin className="w-4 h-4 mr-1.5 text-gray-400" /> {metadata.location}
+                                    <MapPin className="w-4 h-4 mr-1.5 text-gray-400" /> {metadata.locationName || 'N/A'}
                                 </span>
                                 <span className="flex items-center text-sm">
-                                    <User className="w-4 h-4 mr-1.5 text-gray-400" /> {metadata.owner}
+                                    <User className="w-4 h-4 mr-1.5 text-gray-400" /> {project.ownerName}
                                 </span>
                             </div>
                         </div>
@@ -132,11 +122,7 @@ export const EnlistedProjectCard = ({ project }) => {
                     {/* Right Side: Price and Expander Icon */}
                     <div className="flex items-center space-x-4">
                         <div className="text-right">
-                             {ethToInrRate ? (
-                                <p className="text-2xl font-bold text-emerald-600">₹{formattedInrPrice}</p>
-                            ) : (
-                                <div className="h-7 bg-gray-200 rounded w-32 animate-pulse"></div>
-                            )}
+                            <p className="text-2xl font-bold text-emerald-600">{formattedInrPrice}</p>
                             <p className="text-sm text-gray-500">per token</p>
                         </div>
                         <ChevronDown 
@@ -164,7 +150,7 @@ export const EnlistedProjectCard = ({ project }) => {
                             <div className="flex items-center text-gray-700">
                                 <Leaf className="w-5 h-5 mr-3 text-green-500 flex-shrink-0" />
                                 <div>
-                                    <span className="font-bold">{metadata.carbonCredits.toLocaleString()}</span> total carbon credits
+                                    <span className="font-bold">{Number(metadata.carbonCredits).toLocaleString()}</span> total carbon credits
                                 </div>
                             </div>
                             <div className="flex items-center text-gray-700">
@@ -190,7 +176,7 @@ export const EnlistedProjectCard = ({ project }) => {
                                     href={metadata.landDocuments} 
                                     target="_blank" 
                                     rel="noopener noreferrer"
-                                    onClick={(e) => e.stopPropagation()} // Prevents the card from collapsing when link is clicked
+                                    onClick={(e) => e.stopPropagation()} 
                                     className="inline-flex items-center px-4 py-2 bg-blue-50 text-blue-700 rounded-lg font-semibold text-sm hover:bg-blue-100 transition-colors"
                                 >
                                     <FileText className="w-4 h-4 mr-2" />
