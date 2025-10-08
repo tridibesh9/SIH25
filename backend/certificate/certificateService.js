@@ -1,3 +1,6 @@
+process.env.PUPPETEER_CACHE_DIR = '/tmp/puppeteer';
+
+
 import axios from 'axios';
 import puppeteer from 'puppeteer';
 import crypto from 'crypto';
